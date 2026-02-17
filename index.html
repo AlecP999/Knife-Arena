@@ -78,16 +78,16 @@ canvas{display:block}
 #minimap canvas{width:100%;height:100%}
 #pause-hint{position:fixed;top:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.15);font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;z-index:55;display:none;pointer-events:none}
 .setting-row input[type="checkbox"]{width:20px;height:20px;accent-color:#ff3c3c;cursor:pointer}
-#mobile-controls{position:fixed;inset:0;z-index:45;display:none;pointer-events:none}
-#joystick-area{position:absolute;bottom:20px;left:20px;width:140px;height:140px;pointer-events:auto}
+#mobile-controls{position:fixed;inset:0;z-index:100;display:none;pointer-events:none}
+#joystick-area{position:absolute;bottom:100px;left:20px;width:140px;height:140px;pointer-events:auto}
 #joystick-base{width:100%;height:100%;background:rgba(255,255,255,0.1);border:2px solid rgba(255,60,60,0.3);border-radius:50%;position:relative}
 #joystick-stick{width:50px;height:50px;background:rgba(255,60,60,0.6);border:2px solid rgba(255,60,60,0.8);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);transition:background 0.1s}
 .mobile-btn{position:absolute;background:rgba(255,255,255,0.1);border:2px solid rgba(255,60,60,0.3);color:#fff;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;border-radius:8px;display:flex;align-items:center;justify-content:center;pointer-events:auto;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 .mobile-btn:active{background:rgba(255,60,60,0.4);border-color:#ff3c3c}
-#mobile-slash{bottom:60px;right:90px;width:70px;height:70px;border-radius:50%}
-#mobile-backstab{bottom:20px;right:20px;width:70px;height:70px;border-radius:50%}
-#mobile-jump{bottom:150px;right:20px;width:60px;height:60px}
-#mobile-slide{bottom:150px;right:90px;width:60px;height:60px}
+#mobile-slash{bottom:140px;right:90px;width:70px;height:70px;border-radius:50%}
+#mobile-backstab{bottom:100px;right:20px;width:70px;height:70px;border-radius:50%}
+#mobile-jump{bottom:230px;right:20px;width:60px;height:60px}
+#mobile-slide{bottom:230px;right:90px;width:60px;height:60px}
 </style>
 </head>
 <body>
@@ -147,7 +147,7 @@ function finishListening(code){if(!listeningFor)return;keybinds[listeningFor]=co
 
 let settingsOpen=false,settingsFromGame=false;
 function openSettings(){settingsOpen=true;settingsFromGame=gameActive;document.getElementById('settings-panel').style.display='block';buildKeybindRows();updateSensSlider();document.getElementById('mobile-toggle').checked=mobileMode;}
-function closeSettings(){settingsOpen=false;listeningFor=null;document.getElementById('settings-panel').style.display='none';saveKeybinds();updateMenuInfo();if(settingsFromGame&&gameActive)renderer.domElement.requestPointerLock();}
+function closeSettings(){settingsOpen=false;listeningFor=null;document.getElementById('settings-panel').style.display='none';saveKeybinds();updateMenuInfo();if(settingsFromGame&&gameActive){updateMobileControls();if(!mobileMode)renderer.domElement.requestPointerLock();}}
 function updateSensSlider(){document.getElementById('sens-slider').value=mouseSens/0.001;document.getElementById('sens-val').textContent=(mouseSens/0.001).toFixed(1);}
 function updateMobileControls(){document.getElementById('mobile-controls').style.display=mobileMode&&gameActive?'block':'none';document.body.style.cursor=mobileMode?'default':'none';}
 function updateMenuInfo(){document.getElementById('menu-controls-info').innerHTML='<span>'+codeToDisplay(keybinds.forward)+codeToDisplay(keybinds.left)+codeToDisplay(keybinds.backward)+codeToDisplay(keybinds.right)+'</span> MOVE &nbsp; <span>'+codeToDisplay(keybinds.slash)+'</span> SLASH &nbsp; <span>'+codeToDisplay(keybinds.backstab)+'</span> BACKSTAB &nbsp; <span>'+codeToDisplay(keybinds.sprint)+'</span> SPRINT<br><span>'+codeToDisplay(keybinds.crouch)+'</span> SLIDE &nbsp; <span>'+codeToDisplay(keybinds.jump)+'</span> JUMP &nbsp; <span>ESC</span> SETTINGS';}

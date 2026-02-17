@@ -294,7 +294,36 @@ function drawMinimap(){
   enemies.forEach(e=>{if(!e.alive)return;const ex=(e.mesh.position.x+arenaSize)*sc,ez=(e.mesh.position.z+arenaSize)*sc;ctx.fillStyle='#ff3333';ctx.beginPath();ctx.arc(ex,ez,3,0,Math.PI*2);ctx.fill();});
 }
 
-function trySlide(){if(isSliding||!moveState.sprint||!gameActive||!isGrounded)return;const f=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);f.y=0;f.normalize();isSliding=true;slideTimer=SLIDE_DURATION;slideDir.copy(f);}
+function trySlide(){
+  if(isSliding || !moveState.sprint || !gameActive || !isGrounded) return;
+
+  const forward = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+  const right   = new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
+
+  forward.y = 0;
+  right.y   = 0;
+
+  forward.normalize();
+  right.normalize();
+
+  const moveDir = new THREE.Vector3();
+
+  if(moveState.forward)  moveDir.add(forward);
+  if(moveState.backward) moveDir.sub(forward);
+  if(moveState.right)    moveDir.add(right);
+  if(moveState.left)     moveDir.sub(right);
+
+  if(moveDir.length() === 0){
+    moveDir.copy(forward); // default forward
+  } else {
+    moveDir.normalize();
+  }
+
+  isSliding = true;
+  slideTimer = SLIDE_DURATION;
+  slideDir.copy(moveDir);
+}
+
 
 // CHANGED: tryJump now supports bunny hopping — jump while sliding to launch with momentum
 function tryJump(){

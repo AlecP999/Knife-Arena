@@ -134,7 +134,8 @@ let knifeSwinging=false,knifeCD=0,backstabCD=0,backstabSwinging=false;
 let arenaSize=40,respawnPoints=[],walls=[],wallBoxes=[],knifeGroup,knifeBlade,minimapCtx,ambientParticles=[];
 let isSliding=false,slideTimer=0,slideDir;
 // CHANGED: Faster slide — duration 0.8s, speed 26 (was 0.6 / 18)
-const SLIDE_DURATION=0.8,SLIDE_SPEED=26,SLIDE_HEIGHT=0.9,NORMAL_HEIGHT=1.7;
+const SLIDE_DURATION=0.8,SLIDE_SPEED=22,SLIDE_SPRINT_BOOST=1.35,SLIDE_HEIGHT=0.9,NORMAL_HEIGHT=1.7;
+  
 let currentHeight=NORMAL_HEIGHT;
 
 let velocityY=0,isGrounded=true;
@@ -295,7 +296,8 @@ function drawMinimap(){
 }
 
 function trySlide(){
-  if(isSliding || !moveState.sprint || !gameActive || !isGrounded) return;
+  if(isSliding || !gameActive || !isGrounded) return;
+
 
   const forward = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
   const right   = new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
@@ -346,7 +348,10 @@ function updateSlide(dt){
   const si=document.getElementById('slide-indicator');
   if(!isSliding){si.style.opacity='0';return;}
   slideTimer-=dt;si.style.opacity='1';if(slideTimer<=0){isSliding=false;return;}
-  const t=slideTimer/SLIDE_DURATION,spd=SLIDE_SPEED*t;currentHeight+=(SLIDE_HEIGHT-currentHeight)*Math.min(1,dt*20);
+  const t = slideTimer / SLIDE_DURATION;
+const speedMultiplier = moveState.sprint ? SLIDE_SPRINT_BOOST : 1;
+const spd = SLIDE_SPEED * speedMultiplier * t;
+currentHeight+=(SLIDE_HEIGHT-currentHeight)*Math.min(1,dt*20);
   const mv=slideDir.clone().multiplyScalar(spd*dt),np=camera.position.clone().add(mv);np.y=currentHeight;np.x=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.x));np.z=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.z));
   const tb=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(np.x,0.5,np.z),new THREE.Vector3(0.8,1,0.8));let bl=false;for(const w of wallBoxes)if(tb.intersectsBox(w)){bl=true;break;}
   if(!bl){camera.position.x=np.x;camera.position.z=np.z;}else isSliding=false;

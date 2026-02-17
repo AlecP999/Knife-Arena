@@ -240,7 +240,7 @@ class AIEnemy{
       this.thinkCD=0.8+Math.random()*0.7;
       if(distP<3.5&&this.attackCD<=0&&this.hesitateCD<=0){
         this.state='attack';
-      }else if(distP<15){ // NERFED detection range from 20 to 15
+      }else if(distP<30){
         this.state='chase';
       }else if(this.stateTimer<=0){
         this.state='patrol';this.patrolTarget=this.randomPoint();this.stateTimer=4+Math.random()*5; // longer patrol

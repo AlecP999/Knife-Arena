@@ -77,6 +77,17 @@ canvas{display:block}
 #minimap{position:fixed;top:20px;left:20px;width:150px;height:150px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,60,60,0.3);z-index:50;display:none}
 #minimap canvas{width:100%;height:100%}
 #pause-hint{position:fixed;top:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.15);font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;z-index:55;display:none;pointer-events:none}
+.setting-row input[type="checkbox"]{width:20px;height:20px;accent-color:#ff3c3c;cursor:pointer}
+#mobile-controls{position:fixed;inset:0;z-index:45;display:none;pointer-events:none}
+#joystick-area{position:absolute;bottom:20px;left:20px;width:140px;height:140px;pointer-events:auto}
+#joystick-base{width:100%;height:100%;background:rgba(255,255,255,0.1);border:2px solid rgba(255,60,60,0.3);border-radius:50%;position:relative}
+#joystick-stick{width:50px;height:50px;background:rgba(255,60,60,0.6);border:2px solid rgba(255,60,60,0.8);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);transition:background 0.1s}
+.mobile-btn{position:absolute;background:rgba(255,255,255,0.1);border:2px solid rgba(255,60,60,0.3);color:#fff;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;border-radius:8px;display:flex;align-items:center;justify-content:center;pointer-events:auto;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.mobile-btn:active{background:rgba(255,60,60,0.4);border-color:#ff3c3c}
+#mobile-slash{bottom:60px;right:90px;width:70px;height:70px;border-radius:50%}
+#mobile-backstab{bottom:20px;right:20px;width:70px;height:70px;border-radius:50%}
+#mobile-jump{bottom:150px;right:20px;width:60px;height:60px}
+#mobile-slide{bottom:150px;right:90px;width:60px;height:60px}
 </style>
 </head>
 <body>
@@ -84,11 +95,15 @@ canvas{display:block}
 <h1>KNIFE <span>ARENA</span></h1><div class="subtitle">CLOSE QUARTERS COMBAT</div>
 <button class="menu-btn" onclick="startGame('duel')">DUEL — FIRST TO 5 KILLS</button>
 <button class="menu-btn" onclick="startGame('ffa')">FREE FOR ALL</button>
+<!-- <button class="menu-btn" onclick="startGame('multiplayer-ffa')">MULTIPLAYER FFA</button> -->
 <button class="menu-btn" onclick="openSettings()" style="margin-top:16px;border-color:rgba(255,255,255,0.15)">SETTINGS</button>
 <div class="menu-info" id="menu-controls-info"></div></div></div>
 
 <div id="settings-panel"><div id="settings-inner">
 <h2>SETTINGS</h2><div class="settings-sub">CUSTOMIZE YOUR EXPERIENCE</div>
+<div class="settings-section"><h3>DISPLAY</h3>
+<div class="setting-row"><label>Mobile Controls</label>
+<input type="checkbox" id="mobile-toggle"></div></div>
 <div class="settings-section"><h3>SENSITIVITY</h3>
 <div class="setting-row"><label>Mouse Sensitivity</label><span class="sens-value" id="sens-val">2.0</span>
 <input type="range" id="sens-slider" min="0.5" max="10" step="0.1" value="2.0"></div></div>
@@ -108,12 +123,21 @@ canvas{display:block}
 <div id="round-over"><h2>ROUND OVER</h2><div class="winner-text" id="winner-text"></div>
 <div class="scores-summary" id="scores-summary"></div><button class="menu-btn" onclick="backToMenu()">BACK TO MENU</button></div>
 
+<div id="mobile-controls">
+<div id="joystick-area"><div id="joystick-base"><div id="joystick-stick"></div></div></div>
+<div class="mobile-btn" id="mobile-slash">SLASH</div>
+<div class="mobile-btn" id="mobile-backstab">BACK<br>STAB</div>
+<div class="mobile-btn" id="mobile-jump">JUMP</div>
+<div class="mobile-btn" id="mobile-slide">SLIDE</div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const DEFAULT_KEYBINDS={forward:{code:'KeyW',label:'Move Forward'},backward:{code:'KeyS',label:'Move Backward'},left:{code:'KeyA',label:'Move Left'},right:{code:'KeyD',label:'Move Right'},sprint:{code:'ShiftLeft',label:'Sprint'},crouch:{code:'KeyC',label:'Crouch / Slide'},jump:{code:'Space',label:'Jump'},slash:{code:'Mouse0',label:'Slash (LMB)'},backstab:{code:'Mouse2',label:'Backstab (RMB)'}};
-let keybinds={},listeningFor=null;
-function loadKeybinds(){try{const s=localStorage.getItem('ka_binds2');if(s){keybinds=JSON.parse(s);if(!keybinds.jump)keybinds.jump='Space';return;}}catch(e){}resetKeybindsData();}
+let keybinds={},listeningFor=null,mobileMode=false;
+function loadKeybinds(){try{const s=localStorage.getItem('ka_binds2');if(s){keybinds=JSON.parse(s);if(!keybinds.jump)keybinds.jump='Space';}}catch(e){}if(!keybinds.forward)resetKeybindsData();try{const m=localStorage.getItem('ka_mobile');if(m)mobileMode=m==='true';}catch(e){}}
 function resetKeybindsData(){keybinds={};for(const[a,d]of Object.entries(DEFAULT_KEYBINDS))keybinds[a]=d.code;}
+function saveMobileMode(){try{localStorage.setItem('ka_mobile',mobileMode?'true':'false');updateMobileControls();}catch(e){}}
 function resetKeybinds(){resetKeybindsData();saveKeybinds();buildKeybindRows();}
 function saveKeybinds(){try{localStorage.setItem('ka_binds2',JSON.stringify(keybinds));}catch(e){}}
 function codeToDisplay(c){if(c==='Mouse0')return'LMB';if(c==='Mouse1')return'MMB';if(c==='Mouse2')return'RMB';if(c.startsWith('Key'))return c.slice(3);if(c.startsWith('Digit'))return c.slice(5);if(c==='ShiftLeft'||c==='ShiftRight')return'SHIFT';if(c==='ControlLeft'||c==='ControlRight')return'CTRL';if(c==='AltLeft'||c==='AltRight')return'ALT';if(c==='Space')return'SPACE';return c.replace('Arrow','').toUpperCase();}
@@ -122,9 +146,10 @@ function startListening(btn){document.querySelectorAll('.keybind-btn.listening')
 function finishListening(code){if(!listeningFor)return;keybinds[listeningFor]=code;saveKeybinds();const btn=document.querySelector('.keybind-btn[data-action="'+listeningFor+'"]');if(btn){btn.textContent=codeToDisplay(code);btn.classList.remove('listening');}listeningFor=null;updateMenuInfo();}
 
 let settingsOpen=false,settingsFromGame=false;
-function openSettings(){settingsOpen=true;settingsFromGame=gameActive;document.getElementById('settings-panel').style.display='block';buildKeybindRows();updateSensSlider();}
+function openSettings(){settingsOpen=true;settingsFromGame=gameActive;document.getElementById('settings-panel').style.display='block';buildKeybindRows();updateSensSlider();document.getElementById('mobile-toggle').checked=mobileMode;}
 function closeSettings(){settingsOpen=false;listeningFor=null;document.getElementById('settings-panel').style.display='none';saveKeybinds();updateMenuInfo();if(settingsFromGame&&gameActive)renderer.domElement.requestPointerLock();}
 function updateSensSlider(){document.getElementById('sens-slider').value=mouseSens/0.001;document.getElementById('sens-val').textContent=(mouseSens/0.001).toFixed(1);}
+function updateMobileControls(){document.getElementById('mobile-controls').style.display=mobileMode&&gameActive?'block':'none';document.body.style.cursor=mobileMode?'default':'none';}
 function updateMenuInfo(){document.getElementById('menu-controls-info').innerHTML='<span>'+codeToDisplay(keybinds.forward)+codeToDisplay(keybinds.left)+codeToDisplay(keybinds.backward)+codeToDisplay(keybinds.right)+'</span> MOVE &nbsp; <span>'+codeToDisplay(keybinds.slash)+'</span> SLASH &nbsp; <span>'+codeToDisplay(keybinds.backstab)+'</span> BACKSTAB &nbsp; <span>'+codeToDisplay(keybinds.sprint)+'</span> SPRINT<br><span>'+codeToDisplay(keybinds.crouch)+'</span> SLIDE &nbsp; <span>'+codeToDisplay(keybinds.jump)+'</span> JUMP &nbsp; <span>ESC</span> SETTINGS';}
 
 let scene,camera,renderer,clock,enemies=[],moveState={forward:false,backward:false,left:false,right:false,sprint:false,crouch:false};
@@ -150,7 +175,7 @@ const BACKSTAB_COOLDOWN=3.0;
 const PLAYER_SPEED=8,SPRINT_MULT=1.5,PLAYER_HP=150;
 
 function init(){
-  loadKeybinds();updateMenuInfo();slideDir=new THREE.Vector3();bhopMomentum=new THREE.Vector3();
+  loadKeybinds();updateMenuInfo();updateMobileControls();slideDir=new THREE.Vector3();bhopMomentum=new THREE.Vector3();
   scene=new THREE.Scene();scene.background=new THREE.Color(0x111118);scene.fog=new THREE.FogExp2(0x111118,0.018);
   camera=new THREE.PerspectiveCamera(80,innerWidth/innerHeight,0.1,200);camera.position.set(0,NORMAL_HEIGHT,0);
   renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
@@ -158,7 +183,8 @@ function init(){
   document.body.appendChild(renderer.domElement);clock=new THREE.Clock();
   minimapCtx=document.getElementById('minimap-canvas').getContext('2d');
   document.getElementById('sens-slider').addEventListener('input',e=>{mouseSens=parseFloat(e.target.value)*0.001;document.getElementById('sens-val').textContent=parseFloat(e.target.value).toFixed(1);});
-  buildArena();buildKnifeViewModel();setupLights();createAmbientParticles();setupEvents();animate();
+  document.getElementById('mobile-toggle').addEventListener('change',e=>{mobileMode=e.target.checked;saveMobileMode();});
+  buildArena();buildKnifeViewModel();setupLights();createAmbientParticles();setupEvents();setupMobileControls();animate();
 }
 
 function buildArena(){
@@ -264,7 +290,7 @@ function playerDie(att,bs2){gameActive=false;playerDeaths++;if(att)att.kills++;d
 function respawn(){document.getElementById('death-screen').style.display='none';playerHP=PLAYER_HP;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;bhopTimer=0;const sp=respawnPoints[Math.floor(Math.random()*respawnPoints.length)];camera.position.set(sp.x,NORMAL_HEIGHT,sp.z);yaw=Math.random()*Math.PI*2;pitch=0;updateHUD();renderer.domElement.requestPointerLock();gameActive=true;}
 function checkRoundOver(){if(gameMode==='duel'){if(playerKills>=killTarget)return showRoundOver('YOU WIN!');for(const e of enemies)if(e.kills>=killTarget)return showRoundOver('ENEMY '+e.id+' WINS');}}
 function showRoundOver(w){gameActive=false;if(document.pointerLockElement)document.exitPointerLock();document.getElementById('death-screen').style.display='none';document.getElementById('round-over').style.display='flex';document.getElementById('winner-text').textContent=w;let s='YOU: '+playerKills+' KILLS / '+playerDeaths+' DEATHS\n';enemies.forEach(e=>{s+='ENEMY '+e.id+': '+e.kills+' KILLS\n';});document.getElementById('scores-summary').textContent=s;}
-function backToMenu(){document.getElementById('round-over').style.display='none';document.getElementById('menu').style.display='flex';['hud','crosshair','kill-feed','minimap','slide-indicator','pause-hint'].forEach(id=>document.getElementById(id).style.display='none');enemies.forEach(e=>scene.remove(e.mesh));enemies=[];gameActive=false;}
+function backToMenu(){document.getElementById('round-over').style.display='none';document.getElementById('menu').style.display='flex';['hud','crosshair','kill-feed','minimap','slide-indicator','pause-hint','mobile-controls'].forEach(id=>document.getElementById(id).style.display='none');enemies.forEach(e=>scene.remove(e.mesh));enemies=[];gameActive=false;}
 
 function knifeSlash(){
   if(knifeCD>0||!gameActive||isSliding)return;knifeCD=0.5;knifeSwinging=true;backstabSwinging=false;setTimeout(()=>{knifeSwinging=false;},300);
@@ -366,7 +392,12 @@ function setupEvents(){
     switch(a){case'forward':moveState.forward=true;break;case'backward':moveState.backward=true;break;case'left':moveState.left=true;break;case'right':moveState.right=true;break;case'sprint':moveState.sprint=true;break;case'crouch':moveState.crouch=true;trySlide();break;case'jump':tryJump();break;}
   });
   document.addEventListener('keyup',e=>{if(settingsOpen)return;const a=getAction(e.code);if(!a)return;switch(a){case'forward':moveState.forward=false;break;case'backward':moveState.backward=false;break;case'left':moveState.left=false;break;case'right':moveState.right=false;break;case'sprint':moveState.sprint=false;break;case'crouch':moveState.crouch=false;break;}});
-  document.addEventListener('mousemove',e=>{if(!isLocked||settingsOpen)return;yaw-=e.movementX*mouseSens;pitch-=e.movementY*mouseSens;pitch=Math.max(-Math.PI/2+0.1,Math.min(Math.PI/2-0.1,pitch));});
+  document.addEventListener('mousemove',e=>{if(mobileMode||!isLocked||settingsOpen)return;yaw-=e.movementX*mouseSens;pitch-=e.movementY*mouseSens;pitch=Math.max(-Math.PI/2+0.1,Math.min(Math.PI/2-0.1,pitch));});
+  if('ontouchstart' in window){
+    let touchStartX=0,touchStartY=0;
+    renderer.domElement.addEventListener('touchstart',e=>{if(!mobileMode||!gameActive||e.touches.length!==1)return;touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;});
+    renderer.domElement.addEventListener('touchmove',e=>{if(!mobileMode||!gameActive||e.touches.length!==1)return;const dx=e.touches[0].clientX-touchStartX,dy=e.touches[0].clientY-touchStartY;yaw-=dx*mouseSens*2;pitch-=dy*mouseSens*2;pitch=Math.max(-Math.PI/2+0.1,Math.min(Math.PI/2-0.1,pitch));touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;});
+  }
   document.addEventListener('mousedown',e=>{
     if(settingsOpen){if(listeningFor){finishListening('Mouse'+e.button);e.preventDefault();}return;}
     if(!isLocked)return;const code='Mouse'+e.button;
@@ -378,6 +409,35 @@ function setupEvents(){
   window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 }
 
+let joystickActive=false,joystickId=null,joystickOrigin={x:0,y:0};
+function setupMobileControls(){
+  const jArea=document.getElementById('joystick-area'),jStick=document.getElementById('joystick-stick');
+  jArea.addEventListener('touchstart',e=>{if(!mobileMode||!gameActive)return;e.preventDefault();const t=e.touches[0];joystickActive=true;joystickId=t.identifier;const r=jArea.getBoundingClientRect();joystickOrigin={x:r.left+r.width/2,y:r.top+r.height/2};handleJoystick(t.clientX,t.clientY,jStick);},{passive:false});
+  jArea.addEventListener('touchmove',e=>{if(!joystickActive||!mobileMode)return;e.preventDefault();for(let t of e.touches){if(t.identifier===joystickId){handleJoystick(t.clientX,t.clientY,jStick);break;}}},{passive:false});
+  jArea.addEventListener('touchend',e=>{if(!joystickActive)return;e.preventDefault();for(let t of e.changedTouches){if(t.identifier===joystickId){joystickActive=false;joystickId=null;jStick.style.transform='translate(-50%,-50%)';moveState.forward=moveState.backward=moveState.left=moveState.right=false;break;}}},{passive:false});
+
+  document.getElementById('mobile-slash').addEventListener('touchstart',e=>{e.preventDefault();knifeSlash();},{passive:false});
+  document.getElementById('mobile-backstab').addEventListener('touchstart',e=>{e.preventDefault();knifeBackstab();},{passive:false});
+  document.getElementById('mobile-jump').addEventListener('touchstart',e=>{e.preventDefault();tryJump();},{passive:false});
+  document.getElementById('mobile-slide').addEventListener('touchstart',e=>{e.preventDefault();moveState.crouch=true;trySlide();setTimeout(()=>{moveState.crouch=false;},100);},{passive:false});
+}
+
+function handleJoystick(x,y,stick){
+  const dx=x-joystickOrigin.x,dy=y-joystickOrigin.y,dist=Math.sqrt(dx*dx+dy*dy),maxDist=60;
+  let nx=dx,ny=dy;if(dist>maxDist){nx=dx/dist*maxDist;ny=dy/dist*maxDist;}
+  stick.style.transform=`translate(calc(-50% + ${nx}px), calc(-50% + ${ny}px))`;
+  const threshold=15,angle=Math.atan2(dy,dx);
+  moveState.forward=moveState.backward=moveState.left=moveState.right=false;
+  if(dist>threshold){
+    const deg=angle*180/Math.PI;
+    if(deg>-45&&deg<=45)moveState.right=true;
+    else if(deg>45&&deg<=135)moveState.forward=true;
+    else if(deg<-45&&deg>=-135)moveState.backward=true;
+    else moveState.left=true;
+  }
+}
+
+
 function startGame(mode){
   gameMode=mode;killTarget=mode==='duel'?5:999;playerKills=0;playerDeaths=0;playerHP=PLAYER_HP;backstabCD=0;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;bhopTimer=0;
   enemies.forEach(e=>scene.remove(e.mesh));enemies=[];const n=mode==='duel'?1:3;for(let i=1;i<=n;i++)enemies.push(new AIEnemy(i));
@@ -385,7 +445,7 @@ function startGame(mode){
   document.getElementById('menu').style.display='none';
   ['hud','crosshair','kill-feed','minimap','slide-indicator','pause-hint'].forEach(id=>document.getElementById(id).style.display='block');
   document.getElementById('death-screen').style.display='none';document.getElementById('round-over').style.display='none';
-  updateHUD();renderer.domElement.requestPointerLock();gameActive=true;
+  updateHUD();updateMobileControls();if(!mobileMode)renderer.domElement.requestPointerLock();gameActive=true;
 }
 
 function updatePlayer(dt){

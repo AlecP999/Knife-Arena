@@ -110,7 +110,6 @@ canvas{display:block}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// === KEYBINDS (now includes jump) ===
 const DEFAULT_KEYBINDS={forward:{code:'KeyW',label:'Move Forward'},backward:{code:'KeyS',label:'Move Backward'},left:{code:'KeyA',label:'Move Left'},right:{code:'KeyD',label:'Move Right'},sprint:{code:'ShiftLeft',label:'Sprint'},crouch:{code:'KeyC',label:'Crouch / Slide'},jump:{code:'Space',label:'Jump'},slash:{code:'Mouse0',label:'Slash (LMB)'},backstab:{code:'Mouse2',label:'Backstab (RMB)'}};
 let keybinds={},listeningFor=null;
 function loadKeybinds(){try{const s=localStorage.getItem('ka_binds2');if(s){keybinds=JSON.parse(s);if(!keybinds.jump)keybinds.jump='Space';return;}}catch(e){}resetKeybindsData();}
@@ -128,28 +127,29 @@ function closeSettings(){settingsOpen=false;listeningFor=null;document.getElemen
 function updateSensSlider(){document.getElementById('sens-slider').value=mouseSens/0.001;document.getElementById('sens-val').textContent=(mouseSens/0.001).toFixed(1);}
 function updateMenuInfo(){document.getElementById('menu-controls-info').innerHTML='<span>'+codeToDisplay(keybinds.forward)+codeToDisplay(keybinds.left)+codeToDisplay(keybinds.backward)+codeToDisplay(keybinds.right)+'</span> MOVE &nbsp; <span>'+codeToDisplay(keybinds.slash)+'</span> SLASH &nbsp; <span>'+codeToDisplay(keybinds.backstab)+'</span> BACKSTAB &nbsp; <span>'+codeToDisplay(keybinds.sprint)+'</span> SPRINT<br><span>'+codeToDisplay(keybinds.crouch)+'</span> SLIDE &nbsp; <span>'+codeToDisplay(keybinds.jump)+'</span> JUMP &nbsp; <span>ESC</span> SETTINGS';}
 
-// === GLOBALS ===
 let scene,camera,renderer,clock,enemies=[],moveState={forward:false,backward:false,left:false,right:false,sprint:false,crouch:false};
 let mouseSens=0.002,yaw=0,pitch=0,isLocked=false,gameActive=false,gameMode='duel';
 let playerHP=150,playerKills=0,playerDeaths=0,killTarget=5;
 let knifeSwinging=false,knifeCD=0,backstabCD=0,backstabSwinging=false;
 let arenaSize=40,respawnPoints=[],walls=[],wallBoxes=[],knifeGroup,knifeBlade,minimapCtx,ambientParticles=[];
 let isSliding=false,slideTimer=0,slideDir;
-const SLIDE_DURATION=0.6,SLIDE_SPEED=18,SLIDE_HEIGHT=0.9,NORMAL_HEIGHT=1.7;
+// CHANGED: Faster slide — duration 0.8s, speed 26 (was 0.6 / 18)
+const SLIDE_DURATION=0.8,SLIDE_SPEED=26,SLIDE_HEIGHT=0.9,NORMAL_HEIGHT=1.7;
 let currentHeight=NORMAL_HEIGHT;
 
-// JUMP
 let velocityY=0,isGrounded=true;
 const GRAVITY=22,JUMP_FORCE=9;
+// ADDED: Bunny hop momentum system
+let bhopMomentum=null,bhopTimer=0;
+const BHOP_DURATION=0.5,BHOP_SPEED_BONUS=14;
 
 const KNIFE_DAMAGE=40,BACKSTAB_DAMAGE=150,KNIFE_RANGE=3.5,BACKSTAB_RANGE=4.2;
-// MUCH larger backstab cone — nearly 180 degrees behind
 const BACKSTAB_ANGLE=2.8;
 const BACKSTAB_COOLDOWN=3.0;
 const PLAYER_SPEED=8,SPRINT_MULT=1.5,PLAYER_HP=150;
 
 function init(){
-  loadKeybinds();updateMenuInfo();slideDir=new THREE.Vector3();
+  loadKeybinds();updateMenuInfo();slideDir=new THREE.Vector3();bhopMomentum=new THREE.Vector3();
   scene=new THREE.Scene();scene.background=new THREE.Color(0x111118);scene.fog=new THREE.FogExp2(0x111118,0.018);
   camera=new THREE.PerspectiveCamera(80,innerWidth/innerHeight,0.1,200);camera.position.set(0,NORMAL_HEIGHT,0);
   renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
@@ -203,16 +203,14 @@ function buildKnifeViewModel(){
   knifeGroup.position.set(0.35,-0.3,-0.5);knifeGroup.rotation.set(0.1,-0.3,0);camera.add(knifeGroup);scene.add(camera);
 }
 
-// === DUMBER AI — slower, longer cooldowns, less flanking, more idle ===
 class AIEnemy{
   constructor(id){this.id=id;this.hp=PLAYER_HP;this.kills=0;
-    this.speed=3.5+Math.random()*1.5; // NERFED from 5.5-7 to 3.5-5
+    this.speed=3.5+Math.random()*1.5;
     this.alive=true;this.attackCD=0;this.state='patrol';this.stateTimer=0;
     this.patrolTarget=this.randomPoint();this.mesh=this.createMesh();
     this.facing=new THREE.Vector3(0,0,-1);this.respawnTimer=0;
     this.strafeDir=Math.random()>0.5?1:-1;this.strafeTimer=0;
-    this.thinkCD=0; // AI only re-evaluates every so often
-    this.hesitateCD=0; // random hesitation before attacking
+    this.thinkCD=0;this.hesitateCD=0;
     const sp=respawnPoints[Math.floor(Math.random()*respawnPoints.length)];this.mesh.position.copy(sp);this.mesh.position.y=0;scene.add(this.mesh);}
   createMesh(){
     const g=new THREE.Group();const bm=new THREE.MeshStandardMaterial({color:0x882222,roughness:0.5,metalness:0.3});
@@ -232,47 +230,20 @@ class AIEnemy{
     if(!this.alive){this.respawnTimer-=dt;if(this.respawnTimer<=0)this.respawn();return;}
     this.attackCD=Math.max(0,this.attackCD-dt);this.stateTimer-=dt;this.strafeTimer-=dt;
     this.thinkCD=Math.max(0,this.thinkCD-dt);this.hesitateCD=Math.max(0,this.hesitateCD-dt);
-
     const distP=this.distToPlayer(),toPlayer=new THREE.Vector3(camera.position.x,0,camera.position.z).sub(this.mesh.position).normalize();
-
-    // AI only re-evaluates state every 0.8-1.5s (slow reaction)
     if(this.thinkCD<=0){
       this.thinkCD=0.8+Math.random()*0.7;
-      if(distP<3.5&&this.attackCD<=0&&this.hesitateCD<=0){
-        this.state='attack';
-      }else if(distP<30){
-        this.state='chase';
-      }else if(this.stateTimer<=0){
-        this.state='patrol';this.patrolTarget=this.randomPoint();this.stateTimer=4+Math.random()*5; // longer patrol
-      }
+      if(distP<3.5&&this.attackCD<=0&&this.hesitateCD<=0){this.state='attack';}
+      else if(distP<30){this.state='chase';}
+      else if(this.stateTimer<=0){this.state='patrol';this.patrolTarget=this.randomPoint();this.stateTimer=4+Math.random()*5;}
     }
-
     let moveDir=new THREE.Vector3(),speed=this.speed;
     switch(this.state){
       case'patrol':moveDir.copy(this.patrolTarget).sub(this.mesh.position).normalize();if(this.mesh.position.distanceTo(this.patrolTarget)<2)this.patrolTarget=this.randomPoint();speed*=0.5;break;
-      case'chase':{
-        // NERFED: AI just runs straight at player — no flanking
-        moveDir.copy(toPlayer);
-        // Occasionally strafe but poorly
-        if(distP<6){
-          if(this.strafeTimer<=0){this.strafeDir*=-1;this.strafeTimer=2+Math.random()*3;}
-          const st=new THREE.Vector3(-toPlayer.z,0,toPlayer.x).multiplyScalar(this.strafeDir*0.25);
-          moveDir.add(st).normalize();
-        }
-        break;
-      }
-      case'attack':moveDir.copy(toPlayer);
-        if(distP<KNIFE_RANGE&&this.attackCD<=0){
-          if(this.hesitateCD<=0){
-            this.hesitateCD=0.3+Math.random()*0.5; // hesitate before next decision
-            this.performAttack();
-          }
-        }
-        // If player moved away, go back to chase
-        if(distP>5)this.state='chase';
-        break;
+      case'chase':{moveDir.copy(toPlayer);if(distP<6){if(this.strafeTimer<=0){this.strafeDir*=-1;this.strafeTimer=2+Math.random()*3;}const st=new THREE.Vector3(-toPlayer.z,0,toPlayer.x).multiplyScalar(this.strafeDir*0.25);moveDir.add(st).normalize();}break;}
+      case'attack':moveDir.copy(toPlayer);if(distP<KNIFE_RANGE&&this.attackCD<=0){if(this.hesitateCD<=0){this.hesitateCD=0.3+Math.random()*0.5;this.performAttack();}}if(distP>5)this.state='chase';break;
     }
-    moveDir.y=0;if(moveDir.length()>0){moveDir.normalize();this.facing.lerp(moveDir,dt*3);this.facing.normalize(); // slower turning (3 vs 5)
+    moveDir.y=0;if(moveDir.length()>0){moveDir.normalize();this.facing.lerp(moveDir,dt*3);this.facing.normalize();
       const np=this.mesh.position.clone().add(moveDir.clone().multiplyScalar(speed*dt));np.x=Math.max(-arenaSize+1,Math.min(arenaSize-1,np.x));np.z=Math.max(-arenaSize+1,Math.min(arenaSize-1,np.z));
       const tb=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(np.x,1,np.z),new THREE.Vector3(0.8,2,0.8));let bl=false;for(const w of wallBoxes)if(tb.intersectsBox(w)){bl=true;break;}
       if(!bl)this.mesh.position.copy(np);else{const sx=this.mesh.position.clone();sx.x=np.x;const tbx=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(sx.x,1,sx.z),new THREE.Vector3(0.8,2,0.8));let bx=false;for(const w of wallBoxes)if(tbx.intersectsBox(w)){bx=true;break;}if(!bx)this.mesh.position.x=np.x;const sz=this.mesh.position.clone();sz.z=np.z;const tbz=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(sz.x,1,sz.z),new THREE.Vector3(0.8,2,0.8));let bz=false;for(const w of wallBoxes)if(tbz.intersectsBox(w)){bz=true;break;}if(!bz)this.mesh.position.z=np.z;}
@@ -281,12 +252,7 @@ class AIEnemy{
     if(this.attackCD>0.5){this.rightArm.rotation.x=-Math.PI/2;this.knifeMesh.position.z=-0.5;}else{this.rightArm.rotation.x=0;this.knifeMesh.position.z=-0.2;}
     const bs2=speed>3?8:4;this.mesh.children.forEach((c,i)=>{if(i===3||i===4)c.position.y=0.35+Math.sin(clock.elapsedTime*bs2+i)*0.08;});
   }
-  performAttack(){
-    this.attackCD=2.0+Math.random()*1.0; // NERFED: 2-3s cooldown (was 1.2)
-    if(this.distToPlayer()>KNIFE_RANGE+0.5)return;
-    // AI never backstabs — always does 40 damage
-    takeDamage(KNIFE_DAMAGE,this,false);
-  }
+  performAttack(){this.attackCD=2.0+Math.random()*1.0;if(this.distToPlayer()>KNIFE_RANGE+0.5)return;takeDamage(KNIFE_DAMAGE,this,false);}
   takeDamageFromPlayer(amt,bs2=false){if(!this.alive)return;this.hp-=amt;this.mesh.children[0].material.emissive.setHex(0xff0000);setTimeout(()=>{if(this.mesh.children[0])this.mesh.children[0].material.emissive.setHex(0);},100);if(this.hp<=0)this.die(bs2);}
   die(bs2){this.alive=false;this.mesh.visible=false;this.respawnTimer=3;playerKills++;updateHUD();addKillFeed(bs2?'YOU <span class="backstab">BACKSTABBED</span> ENEMY '+this.id:'YOU → ENEMY '+this.id);showHitmarker(true);checkRoundOver();}
   respawn(){this.alive=true;this.hp=PLAYER_HP;const sp=respawnPoints[Math.floor(Math.random()*respawnPoints.length)];this.mesh.position.set(sp.x,0,sp.z);this.mesh.visible=true;this.state='patrol';this.patrolTarget=this.randomPoint();this.thinkCD=1+Math.random();}
@@ -294,7 +260,7 @@ class AIEnemy{
 
 function takeDamage(amt,attacker,bs2){if(!gameActive)return;playerHP-=amt;const ov=document.getElementById('damage-overlay');ov.style.border='8px solid rgba(255,0,0,0.6)';setTimeout(()=>ov.style.border='0px solid rgba(255,0,0,0)',300);if(bs2)addKillFeed('ENEMY '+attacker.id+' <span class="backstab">BACKSTABBED</span> YOU');if(playerHP<=0){playerHP=0;playerDie(attacker,bs2);}updateHUD();}
 function playerDie(att,bs2){gameActive=false;playerDeaths++;if(att)att.kills++;document.getElementById('death-screen').style.display='flex';document.getElementById('death-by').textContent=att?(bs2?'BACKSTABBED':'KILLED')+' BY ENEMY '+att.id:'ELIMINATED';if(document.pointerLockElement)document.exitPointerLock();checkRoundOver();}
-function respawn(){document.getElementById('death-screen').style.display='none';playerHP=PLAYER_HP;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;const sp=respawnPoints[Math.floor(Math.random()*respawnPoints.length)];camera.position.set(sp.x,NORMAL_HEIGHT,sp.z);yaw=Math.random()*Math.PI*2;pitch=0;updateHUD();renderer.domElement.requestPointerLock();gameActive=true;}
+function respawn(){document.getElementById('death-screen').style.display='none';playerHP=PLAYER_HP;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;bhopTimer=0;const sp=respawnPoints[Math.floor(Math.random()*respawnPoints.length)];camera.position.set(sp.x,NORMAL_HEIGHT,sp.z);yaw=Math.random()*Math.PI*2;pitch=0;updateHUD();renderer.domElement.requestPointerLock();gameActive=true;}
 function checkRoundOver(){if(gameMode==='duel'){if(playerKills>=killTarget)return showRoundOver('YOU WIN!');for(const e of enemies)if(e.kills>=killTarget)return showRoundOver('ENEMY '+e.id+' WINS');}}
 function showRoundOver(w){gameActive=false;if(document.pointerLockElement)document.exitPointerLock();document.getElementById('death-screen').style.display='none';document.getElementById('round-over').style.display='flex';document.getElementById('winner-text').textContent=w;let s='YOU: '+playerKills+' KILLS / '+playerDeaths+' DEATHS\n';enemies.forEach(e=>{s+='ENEMY '+e.id+': '+e.kills+' KILLS\n';});document.getElementById('scores-summary').textContent=s;}
 function backToMenu(){document.getElementById('round-over').style.display='none';document.getElementById('menu').style.display='flex';['hud','crosshair','kill-feed','minimap','slide-indicator','pause-hint'].forEach(id=>document.getElementById(id).style.display='none');enemies.forEach(e=>scene.remove(e.mesh));enemies=[];gameActive=false;}
@@ -309,9 +275,9 @@ function knifeBackstab(){
   if(backstabCD>0||!gameActive||isSliding)return;backstabCD=BACKSTAB_COOLDOWN;backstabSwinging=true;knifeSwinging=true;setTimeout(()=>{knifeSwinging=false;backstabSwinging=false;},400);
   const cp=camera.position.clone(),cd=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion).normalize();
   for(const e of enemies){if(!e.alive)continue;const ec=e.mesh.position.clone();ec.y=1.2;const te=ec.sub(cp);const dist=te.length();te.normalize();
-    if(dist>BACKSTAB_RANGE+1.0||cd.dot(te)<0.3)continue; // wider aim tolerance
+    if(dist>BACKSTAB_RANGE+1.0||cd.dot(te)<0.3)continue;
     const ef=e.facing.clone().normalize(),ad=cd.clone();ad.y=0;ad.normalize();const bd=ef.dot(ad);
-    const isBS=bd>Math.cos(BACKSTAB_ANGLE/2); // very generous cone
+    const isBS=bd>Math.cos(BACKSTAB_ANGLE/2);
     e.takeDamageFromPlayer(isBS?BACKSTAB_DAMAGE:KNIFE_DAMAGE,isBS);if(!isBS)showHitmarker(e.hp<=0);break;}
 }
 
@@ -323,14 +289,29 @@ function addKillFeed(msg){const f=document.getElementById('kill-feed'),d=documen
 function drawMinimap(){
   const ctx=minimapCtx,w=150;ctx.clearRect(0,0,w,w);ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,w,w);const sc=w/(arenaSize*2);
   ctx.fillStyle='rgba(60,60,80,0.5)';walls.forEach(wall=>{const b=new THREE.Box3().setFromObject(wall);const cx=(b.min.x+b.max.x)/2,cz=(b.min.z+b.max.z)/2,sx=b.max.x-b.min.x,sz=b.max.z-b.min.z;ctx.fillRect((cx+arenaSize)*sc-sx*sc/2,(cz+arenaSize)*sc-sz*sc/2,sx*sc,sz*sc);});
-  const px=(camera.position.x+arenaSize)*sc,pz=(camera.position.z+arenaSize)*sc;ctx.fillStyle=isSliding?'#44aaff':'#00ff44';ctx.beginPath();ctx.arc(px,pz,3,0,Math.PI*2);ctx.fill();
+  const px=(camera.position.x+arenaSize)*sc,pz=(camera.position.z+arenaSize)*sc;ctx.fillStyle=isSliding?'#44aaff':(bhopTimer>0?'#ffaa00':'#00ff44');ctx.beginPath();ctx.arc(px,pz,3,0,Math.PI*2);ctx.fill();
   const dir=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);ctx.strokeStyle='#00ff44';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px,pz);ctx.lineTo(px+dir.x*10,pz+dir.z*10);ctx.stroke();
   enemies.forEach(e=>{if(!e.alive)return;const ex=(e.mesh.position.x+arenaSize)*sc,ez=(e.mesh.position.z+arenaSize)*sc;ctx.fillStyle='#ff3333';ctx.beginPath();ctx.arc(ex,ez,3,0,Math.PI*2);ctx.fill();});
 }
 
 function trySlide(){if(isSliding||!moveState.sprint||!gameActive||!isGrounded)return;const f=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);f.y=0;f.normalize();isSliding=true;slideTimer=SLIDE_DURATION;slideDir.copy(f);}
 
-function tryJump(){if(!isGrounded||isSliding||!gameActive)return;velocityY=JUMP_FORCE;isGrounded=false;}
+// CHANGED: tryJump now supports bunny hopping — jump while sliding to launch with momentum
+function tryJump(){
+  if(!gameActive)return;
+  if(isSliding){
+    // BUNNY HOP: cancel slide, keep slide direction as momentum, jump higher
+    bhopMomentum.copy(slideDir).normalize();
+    bhopTimer=BHOP_DURATION;
+    isSliding=false;slideTimer=0;
+    currentHeight=NORMAL_HEIGHT;
+    velocityY=JUMP_FORCE*1.15; // slightly boosted jump
+    isGrounded=false;
+    return;
+  }
+  if(!isGrounded)return;
+  velocityY=JUMP_FORCE;isGrounded=false;
+}
 
 function updateSlide(dt){
   const si=document.getElementById('slide-indicator');
@@ -364,7 +345,7 @@ function setupEvents(){
 }
 
 function startGame(mode){
-  gameMode=mode;killTarget=mode==='duel'?5:999;playerKills=0;playerDeaths=0;playerHP=PLAYER_HP;backstabCD=0;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;
+  gameMode=mode;killTarget=mode==='duel'?5:999;playerKills=0;playerDeaths=0;playerHP=PLAYER_HP;backstabCD=0;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;bhopTimer=0;
   enemies.forEach(e=>scene.remove(e.mesh));enemies=[];const n=mode==='duel'?1:3;for(let i=1;i<=n;i++)enemies.push(new AIEnemy(i));
   const sp=respawnPoints[0];camera.position.set(sp.x,NORMAL_HEIGHT,sp.z);yaw=0;pitch=0;
   document.getElementById('menu').style.display='none';
@@ -384,8 +365,20 @@ function updatePlayer(dt){
     currentHeight+=velocityY*dt;
     if(currentHeight<=NORMAL_HEIGHT){currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;}
     else{isGrounded=false;}
-    // ceiling
     if(currentHeight>5.5){currentHeight=5.5;velocityY=0;}
+  }
+
+  // === BUNNY HOP MOMENTUM — carries slide speed into the air ===
+  bhopTimer=Math.max(0,bhopTimer-dt);
+  if(bhopTimer>0&&!isSliding){
+    const bhopSpd=BHOP_SPEED_BONUS*(bhopTimer/BHOP_DURATION);
+    const mv=bhopMomentum.clone().multiplyScalar(bhopSpd*dt);
+    const np=camera.position.clone().add(mv);
+    np.x=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.x));
+    np.z=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.z));
+    const tb=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(np.x,1,np.z),new THREE.Vector3(0.8,2,0.8));
+    let bl=false;for(const w of wallBoxes)if(tb.intersectsBox(w)){bl=true;break;}
+    if(!bl){camera.position.x=np.x;camera.position.z=np.z;}else{bhopTimer=0;}
   }
 
   updateSlide(dt);
@@ -399,7 +392,6 @@ function updatePlayer(dt){
     const tb=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(np.x,1,np.z),new THREE.Vector3(0.8,2,0.8));let bl=false;for(const w of wallBoxes)if(tb.intersectsBox(w)){bl=true;break;}
     if(!bl)camera.position.copy(np);else{const sx=camera.position.clone();sx.x=np.x;sx.y=1;const tbx=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(sx.x,1,sx.z),new THREE.Vector3(0.8,2,0.8));let bx=false;for(const w of wallBoxes)if(tbx.intersectsBox(w)){bx=true;break;}if(!bx)camera.position.x=np.x;const sz=camera.position.clone();sz.z=np.z;sz.y=1;const tbz=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(sz.x,1,sz.z),new THREE.Vector3(0.8,2,0.8));let bz=false;for(const w of wallBoxes)if(tbz.intersectsBox(w)){bz=true;break;}if(!bz)camera.position.z=np.z;}}
   camera.position.y=currentHeight;
-  // head bob only when grounded and moving
   if(md.length()>0&&isGrounded&&!isSliding){const bf=moveState.sprint?14:10,ba=moveState.sprint?0.04:0.025;camera.position.y=currentHeight+Math.sin(clock.elapsedTime*bf)*ba;}
   knifeCD=Math.max(0,knifeCD-dt);
 }

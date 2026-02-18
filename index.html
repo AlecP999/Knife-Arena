@@ -445,7 +445,7 @@ function startGame(mode){
   document.getElementById('menu').style.display='none';
   ['hud','crosshair','kill-feed','minimap','slide-indicator','pause-hint'].forEach(id=>document.getElementById(id).style.display='block');
   document.getElementById('death-screen').style.display='none';document.getElementById('round-over').style.display='none';
-  updateHUD();updateMobileControls();if(!mobileMode)renderer.domElement.requestPointerLock();gameActive=true;
+  gameActive=true;updateHUD();updateMobileControls();if(!mobileMode)renderer.domElement.requestPointerLock();
 }
 
 function updatePlayer(dt){

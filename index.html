@@ -88,6 +88,75 @@ canvas{display:block}
 #mobile-backstab{bottom:100px;right:20px;width:70px;height:70px;border-radius:50%}
 #mobile-jump{bottom:230px;right:20px;width:60px;height:60px}
 #mobile-slide{bottom:230px;right:90px;width:60px;height:60px}
+
+/* ===== KEYS CURRENCY HUD ===== */
+#keys-display{position:absolute;bottom:58px;right:140px;display:flex;align-items:center;gap:8px;font-family:'Orbitron',sans-serif}
+#keys-icon{width:20px;height:20px;position:relative}
+#keys-icon::before{content:'';position:absolute;width:10px;height:10px;border:2px solid #ffd700;border-radius:50%;top:0;left:3px}
+#keys-icon::after{content:'';position:absolute;width:4px;height:8px;background:#ffd700;top:10px;left:7px;border-radius:0 0 2px 2px}
+#keys-count{color:#ffd700;font-size:18px;letter-spacing:2px;text-shadow:0 0 10px rgba(255,215,0,0.3)}
+
+/* ===== KEY REWARD POPUP ===== */
+#key-reward{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);z-index:120;pointer-events:none;opacity:0;transition:all 0.4s ease;font-family:'Orbitron',sans-serif;text-align:center}
+#key-reward.show{opacity:1;transform:translate(-50%,-60%)}
+#key-reward .amount{font-size:36px;color:#ffd700;text-shadow:0 0 30px rgba(255,215,0,0.5);letter-spacing:4px}
+#key-reward .reason{font-size:12px;color:rgba(255,215,0,0.6);letter-spacing:3px;margin-top:4px}
+
+/* ===== SHOP PANEL ===== */
+#shop-panel{position:fixed;inset:0;z-index:260;background:rgba(5,5,10,0.97);display:none;cursor:default;overflow-y:auto}
+#shop-inner{max-width:800px;margin:40px auto;padding:40px}
+#shop-panel h2{font-family:'Orbitron',sans-serif;font-size:36px;color:#fff;letter-spacing:8px;margin-bottom:4px;text-shadow:0 0 40px rgba(255,215,0,0.2)}
+.shop-sub{color:rgba(255,215,0,0.4);font-size:12px;letter-spacing:5px;font-family:'Orbitron',sans-serif;margin-bottom:12px}
+#shop-balance{color:#ffd700;font-family:'Orbitron',sans-serif;font-size:16px;letter-spacing:3px;margin-bottom:40px;display:flex;align-items:center;gap:10px}
+#shop-balance .key-sym{display:inline-block;width:16px;height:16px;position:relative}
+#shop-balance .key-sym::before{content:'';position:absolute;width:8px;height:8px;border:2px solid #ffd700;border-radius:50%;top:0;left:2px}
+#shop-balance .key-sym::after{content:'';position:absolute;width:3px;height:6px;background:#ffd700;top:8px;left:5px;border-radius:0 0 1px 1px}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;margin-bottom:40px}
+.shop-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);padding:24px 20px;text-align:center;transition:all 0.3s;position:relative;overflow:hidden}
+.shop-item:hover{border-color:rgba(255,215,0,0.3);background:rgba(255,215,0,0.03)}
+.shop-item.owned{border-color:rgba(0,255,100,0.3)}
+.shop-item.equipped{border-color:rgba(255,60,60,0.5);box-shadow:0 0 20px rgba(255,60,60,0.1)}
+.shop-item-name{font-family:'Orbitron',sans-serif;font-size:15px;color:#fff;letter-spacing:3px;margin-bottom:8px}
+.shop-item-rarity{font-size:10px;letter-spacing:3px;font-family:'Orbitron',sans-serif;margin-bottom:12px}
+.rarity-common{color:rgba(180,180,180,0.6)}
+.rarity-rare{color:rgba(60,120,255,0.8)}
+.rarity-epic{color:rgba(180,60,255,0.8)}
+.rarity-legendary{color:rgba(255,215,0,0.9);text-shadow:0 0 10px rgba(255,215,0,0.3)}
+.shop-item-preview{width:100%;height:80px;margin-bottom:16px;display:flex;align-items:center;justify-content:center}
+.shop-item-preview canvas{max-width:100%;max-height:100%}
+.shop-item-price{font-family:'Orbitron',sans-serif;font-size:14px;color:#ffd700;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px}
+.shop-item-btn{padding:10px 24px;background:transparent;border:1px solid rgba(255,215,0,0.3);color:#ffd700;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.3s;width:100%}
+.shop-item-btn:hover{background:rgba(255,215,0,0.1);border-color:#ffd700}
+.shop-item-btn.btn-owned{border-color:rgba(0,255,100,0.3);color:rgba(0,255,100,0.7);cursor:pointer}
+.shop-item-btn.btn-equipped{border-color:rgba(255,60,60,0.5);color:#ff3c3c;cursor:default}
+.shop-item-btn.btn-locked{border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.2);cursor:not-allowed}
+.shop-item-desc{color:rgba(255,255,255,0.3);font-size:12px;margin-top:10px;line-height:1.5}
+.shop-close{padding:14px 50px;background:transparent;border:1px solid rgba(255,60,60,0.3);color:#fff;font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:3px;cursor:pointer;transition:all 0.3s;display:block;margin:30px auto 0}
+.shop-close:hover{background:rgba(255,60,60,0.1);border-color:#ff3c3c}
+
+/* ===== STREAK DISPLAY ===== */
+#streak-display{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:55;display:none;text-align:center;pointer-events:none}
+#streak-count{font-family:'Orbitron',sans-serif;font-size:24px;color:#ff6600;letter-spacing:3px;text-shadow:0 0 20px rgba(255,100,0,0.4)}
+#streak-label{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,150,50,0.5);letter-spacing:4px;margin-top:2px}
+.shop-rewards-info{background:rgba(255,215,0,0.03);border:1px solid rgba(255,215,0,0.12);padding:20px 24px;margin-bottom:30px}
+.shop-rewards-info h3{font-family:'Orbitron',sans-serif;font-size:12px;color:#ffd700;letter-spacing:4px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(255,215,0,0.1)}
+.reward-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.reward-action{color:rgba(255,255,255,0.5);font-size:13px;letter-spacing:1px}
+.reward-amount{color:#ffd700;font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:2px}
+#admin-console{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:300;background:rgba(5,5,15,0.97);border:1px solid rgba(255,60,60,0.3);padding:30px 40px;display:none;text-align:center;font-family:'Orbitron',sans-serif;min-width:320px}
+#admin-console h3{color:#ff3c3c;font-size:14px;letter-spacing:4px;margin-bottom:6px}
+#admin-console .admin-sub{color:rgba(255,255,255,0.2);font-size:10px;letter-spacing:3px;margin-bottom:20px}
+#admin-console input{width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,60,60,0.25);color:#fff;font-family:'Orbitron',sans-serif;font-size:14px;letter-spacing:3px;text-align:center;outline:none;margin-bottom:8px}
+#admin-console input:focus{border-color:#ff3c3c}
+#admin-console .admin-status{color:rgba(255,255,255,0.3);font-size:11px;letter-spacing:2px;min-height:20px;margin-bottom:14px}
+#admin-console .admin-status.success{color:#00ff88}
+#admin-console .admin-status.error{color:#ff3c3c}
+#admin-keys-input{display:none;margin-top:10px}
+#admin-keys-input input{margin-bottom:10px}
+#admin-keys-input button{padding:10px 30px;background:transparent;border:1px solid rgba(255,215,0,0.3);color:#ffd700;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.3s}
+#admin-keys-input button:hover{background:rgba(255,215,0,0.1);border-color:#ffd700}
+#admin-close{padding:10px 30px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;cursor:pointer;transition:all 0.3s;margin-top:6px}
+#admin-close:hover{border-color:rgba(255,255,255,0.4);color:#fff}
 </style>
 </head>
 <body>
@@ -95,7 +164,7 @@ canvas{display:block}
 <h1>KNIFE <span>ARENA</span></h1><div class="subtitle">CLOSE QUARTERS COMBAT</div>
 <button class="menu-btn" onclick="startGame('duel')">DUEL — FIRST TO 5 KILLS</button>
 <button class="menu-btn" onclick="startGame('ffa')">FREE FOR ALL</button>
-<!-- <button class="menu-btn" onclick="startGame('multiplayer-ffa')">MULTIPLAYER FFA</button> -->
+<button class="menu-btn" onclick="openShop()" style="border-color:rgba(255,215,0,0.35);color:#ffd700">SHOP</button>
 <button class="menu-btn" onclick="openSettings()" style="margin-top:16px;border-color:rgba(255,255,255,0.15)">SETTINGS</button>
 <div class="menu-info" id="menu-controls-info"></div></div></div>
 
@@ -111,17 +180,52 @@ canvas{display:block}
 <div class="settings-bottom"><button class="reset-btn" onclick="resetKeybinds()">RESET DEFAULTS</button>
 <button onclick="closeSettings()">SAVE &amp; CLOSE</button></div></div></div>
 
+<div id="shop-panel"><div id="shop-inner">
+<h2>ARMORY</h2><div class="shop-sub">ACQUIRE YOUR ARSENAL</div>
+<div id="shop-balance"><span class="key-sym"></span><span id="shop-keys-count">0</span> KEYS</div>
+<div class="shop-rewards-info">
+<h3>HOW TO EARN KEYS</h3>
+<div class="reward-row"><span class="reward-action">KNIFE KILL</span><span class="reward-amount">+10</span></div>
+<div class="reward-row"><span class="reward-action">BACKSTAB KILL</span><span class="reward-amount">+25</span></div>
+<div class="reward-row"><span class="reward-action">3 KILL STREAK</span><span class="reward-amount">+30</span></div>
+<div class="reward-row"><span class="reward-action">5 KILL STREAK</span><span class="reward-amount">+75</span></div>
+<div class="reward-row"><span class="reward-action">10 KILL STREAK</span><span class="reward-amount">+200</span></div>
+<div class="reward-row"><span class="reward-action">WIN A DUEL</span><span class="reward-amount">+150</span></div>
+</div>
+<div class="shop-grid" id="shop-grid"></div>
+<button class="shop-close" onclick="closeShop()">CLOSE SHOP</button>
+</div></div>
+
 <div id="crosshair"><div class="dot"></div></div>
 <div id="hud"><div id="health-text">HEALTH</div><div id="health-bar-container"><div id="health-bar"></div></div>
 <div id="backstab-cd-label">BACKSTAB READY</div><div id="backstab-cd-container"><div id="backstab-cd-bar"></div></div>
-<div id="score-label">KILLS</div><div id="score-display">0</div><div id="weapon-name">COMBAT KNIFE</div></div>
+<div id="score-label">KILLS</div><div id="score-display">0</div>
+<div id="keys-display"><div id="keys-icon"></div><span id="keys-count">0</span></div>
+<div id="weapon-name">COMBAT KNIFE</div></div>
 <div id="kill-feed"></div><div id="damage-overlay"></div>
 <div id="slide-indicator">SLIDING</div><div id="hitmarker"></div>
 <div id="minimap"><canvas id="minimap-canvas" width="150" height="150"></canvas></div>
 <div id="pause-hint">ESC — SETTINGS</div>
 <div id="death-screen"><h2>ELIMINATED</h2><p id="death-by"></p><button class="respawn-btn" onclick="respawn()">RESPAWN</button></div>
 <div id="round-over"><h2>ROUND OVER</h2><div class="winner-text" id="winner-text"></div>
-<div class="scores-summary" id="scores-summary"></div><button class="menu-btn" onclick="backToMenu()">BACK TO MENU</button></div>
+<div class="scores-summary" id="scores-summary"></div>
+<div class="scores-summary" id="round-keys-earned" style="color:#ffd700"></div>
+<button class="menu-btn" onclick="backToMenu()">BACK TO MENU</button></div>
+
+<div id="key-reward"><div class="amount"></div><div class="reason"></div></div>
+<div id="streak-display"><div id="streak-count">0</div><div id="streak-label">KILL STREAK</div></div>
+
+<div id="admin-console">
+<h3>ADMIN CONSOLE</h3>
+<div class="admin-sub">RESTRICTED ACCESS</div>
+<input type="password" id="admin-code" placeholder="ENTER CODE" maxlength="10" autocomplete="off">
+<div class="admin-status" id="admin-status"></div>
+<div id="admin-keys-input">
+<input type="number" id="admin-keys-amount" placeholder="KEY AMOUNT" min="0" max="999999">
+<button onclick="adminSetKeys()">SET KEYS</button>
+</div>
+<button id="admin-close" onclick="closeAdmin()">CLOSE</button>
+</div>
 
 <div id="mobile-controls">
 <div id="joystick-area"><div id="joystick-base"><div id="joystick-stick"></div></div></div>
@@ -133,13 +237,14 @@ canvas{display:block}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const DEFAULT_KEYBINDS={forward:{code:'KeyW',label:'Move Forward'},backward:{code:'KeyS',label:'Move Backward'},left:{code:'KeyA',label:'Move Left'},right:{code:'KeyD',label:'Move Right'},sprint:{code:'ShiftLeft',label:'Sprint'},crouch:{code:'KeyC',label:'Crouch / Slide'},jump:{code:'Space',label:'Jump'},slash:{code:'Mouse0',label:'Slash (LMB)'},backstab:{code:'Mouse2',label:'Backstab (RMB)'}};
+// ===== KEYBINDS =====
+const DEFAULT_KEYBINDS={forward:{code:'KeyW',label:'Move Forward'},backward:{code:'KeyS',label:'Move Backward'},left:{code:'KeyA',label:'Move Left'},right:{code:'KeyD',label:'Move Right'},sprint:{code:'ShiftLeft',label:'Sprint'},crouch:{code:'KeyC',label:'Crouch / Slide'},jump:{code:'Space',label:'Jump'},slash:{code:'Mouse0',label:'Slash (LMB)'},backstab:{code:'Mouse2',label:'Backstab (RMB)'},inspect:{code:'KeyF',label:'Inspect Knife'}};
 let keybinds={},listeningFor=null,mobileMode=false;
-function loadKeybinds(){try{const s=localStorage.getItem('ka_binds2');if(s){keybinds=JSON.parse(s);if(!keybinds.jump)keybinds.jump='Space';}}catch(e){}if(!keybinds.forward)resetKeybindsData();try{const m=localStorage.getItem('ka_mobile');if(m)mobileMode=m==='true';}catch(e){}}
+function loadKeybinds(){try{const s=localStorage.getItem('ka_binds3');if(s){keybinds=JSON.parse(s);}}catch(e){}if(!keybinds.forward)resetKeybindsData();if(!keybinds.inspect)keybinds.inspect='KeyF';try{const m=localStorage.getItem('ka_mobile');if(m)mobileMode=m==='true';}catch(e){}}
 function resetKeybindsData(){keybinds={};for(const[a,d]of Object.entries(DEFAULT_KEYBINDS))keybinds[a]=d.code;}
 function saveMobileMode(){try{localStorage.setItem('ka_mobile',mobileMode?'true':'false');updateMobileControls();}catch(e){}}
 function resetKeybinds(){resetKeybindsData();saveKeybinds();buildKeybindRows();}
-function saveKeybinds(){try{localStorage.setItem('ka_binds2',JSON.stringify(keybinds));}catch(e){}}
+function saveKeybinds(){try{localStorage.setItem('ka_binds3',JSON.stringify(keybinds));}catch(e){}}
 function codeToDisplay(c){if(c==='Mouse0')return'LMB';if(c==='Mouse1')return'MMB';if(c==='Mouse2')return'RMB';if(c.startsWith('Key'))return c.slice(3);if(c.startsWith('Digit'))return c.slice(5);if(c==='ShiftLeft'||c==='ShiftRight')return'SHIFT';if(c==='ControlLeft'||c==='ControlRight')return'CTRL';if(c==='AltLeft'||c==='AltRight')return'ALT';if(c==='Space')return'SPACE';return c.replace('Arrow','').toUpperCase();}
 function buildKeybindRows(){const ct=document.getElementById('keybinds-container');ct.innerHTML='';for(const[action,def]of Object.entries(DEFAULT_KEYBINDS)){const r=document.createElement('div');r.className='setting-row';r.innerHTML='<label>'+def.label+'</label><button class="keybind-btn" data-action="'+action+'">'+codeToDisplay(keybinds[action])+'</button>';ct.appendChild(r);}ct.querySelectorAll('.keybind-btn').forEach(b=>b.addEventListener('click',()=>startListening(b)));}
 function startListening(btn){document.querySelectorAll('.keybind-btn.listening').forEach(b=>{b.classList.remove('listening');b.textContent=codeToDisplay(keybinds[b.dataset.action]);});listeningFor=btn.dataset.action;btn.classList.add('listening');btn.textContent='PRESS KEY...';}
@@ -150,32 +255,319 @@ function openSettings(){settingsOpen=true;settingsFromGame=gameActive;document.g
 function closeSettings(){settingsOpen=false;listeningFor=null;document.getElementById('settings-panel').style.display='none';saveKeybinds();updateMenuInfo();if(settingsFromGame&&gameActive){updateMobileControls();if(!mobileMode)renderer.domElement.requestPointerLock();}}
 function updateSensSlider(){document.getElementById('sens-slider').value=mouseSens/0.001;document.getElementById('sens-val').textContent=(mouseSens/0.001).toFixed(1);}
 function updateMobileControls(){document.getElementById('mobile-controls').style.display=mobileMode&&gameActive?'block':'none';document.body.style.cursor=mobileMode?'default':'none';}
-function updateMenuInfo(){document.getElementById('menu-controls-info').innerHTML='<span>'+codeToDisplay(keybinds.forward)+codeToDisplay(keybinds.left)+codeToDisplay(keybinds.backward)+codeToDisplay(keybinds.right)+'</span> MOVE &nbsp; <span>'+codeToDisplay(keybinds.slash)+'</span> SLASH &nbsp; <span>'+codeToDisplay(keybinds.backstab)+'</span> BACKSTAB &nbsp; <span>'+codeToDisplay(keybinds.sprint)+'</span> SPRINT<br><span>'+codeToDisplay(keybinds.crouch)+'</span> SLIDE &nbsp; <span>'+codeToDisplay(keybinds.jump)+'</span> JUMP &nbsp; <span>ESC</span> SETTINGS';}
+function updateMenuInfo(){document.getElementById('menu-controls-info').innerHTML='<span>'+codeToDisplay(keybinds.forward)+codeToDisplay(keybinds.left)+codeToDisplay(keybinds.backward)+codeToDisplay(keybinds.right)+'</span> MOVE &nbsp; <span>'+codeToDisplay(keybinds.slash)+'</span> SLASH &nbsp; <span>'+codeToDisplay(keybinds.backstab)+'</span> BACKSTAB &nbsp; <span>'+codeToDisplay(keybinds.sprint)+'</span> SPRINT<br><span>'+codeToDisplay(keybinds.crouch)+'</span> SLIDE &nbsp; <span>'+codeToDisplay(keybinds.jump)+'</span> JUMP &nbsp; <span>'+codeToDisplay(keybinds.inspect)+'</span> INSPECT &nbsp; <span>ESC</span> SETTINGS';}
 
+// ===== CURRENCY & SHOP SYSTEM =====
+let playerKeys = 0;
+let ownedSkins = ['standard'];
+let equippedSkin = 'standard';
+let killStreak = 0;
+let roundKeysEarned = 0;
+
+const SHOP_ITEMS = [
+  {
+    id: 'standard',
+    name: 'COMBAT KNIFE',
+    rarity: 'common',
+    price: 0,
+    desc: 'Standard issue tactical knife. Reliable and deadly.',
+    owned: true
+  },
+  {
+    id: 'balisong',
+    name: 'BALISONG',
+    rarity: 'legendary',
+    price: 5000,
+    desc: 'Butterfly knife with mesmerizing flip animations. The ultimate flex.',
+    owned: false
+  },
+  {
+    id: 'karambit',
+    name: 'KARAMBIT',
+    rarity: 'epic',
+    price: 3500,
+    desc: 'Curved claw blade with signature spin animation. Lethal elegance.',
+    owned: false
+  }
+];
+
+// Key rewards
+const KILL_REWARD = 10;
+const BACKSTAB_REWARD = 25;
+const STREAK_3_REWARD = 30;
+const STREAK_5_REWARD = 75;
+const STREAK_10_REWARD = 200;
+const WIN_REWARD = 150;
+
+function loadShopData(){
+  try{
+    const d=localStorage.getItem('ka_shop2');
+    if(d){const p=JSON.parse(d);playerKeys=p.keys||0;ownedSkins=p.owned||['standard'];equippedSkin=p.equipped||'standard';}
+  }catch(e){}
+}
+function saveShopData(){
+  try{localStorage.setItem('ka_shop2',JSON.stringify({keys:playerKeys,owned:ownedSkins,equipped:equippedSkin}));}catch(e){}
+}
+
+function awardKeys(amount, reason){
+  playerKeys += amount;
+  roundKeysEarned += amount;
+  saveShopData();
+  updateKeysDisplay();
+  // Show popup
+  const el = document.getElementById('key-reward');
+  el.querySelector('.amount').textContent = '+' + amount + ' KEYS';
+  el.querySelector('.reason').textContent = reason;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 1200);
+}
+
+function updateKeysDisplay(){
+  document.getElementById('keys-count').textContent = playerKeys;
+  const sc = document.getElementById('shop-keys-count');
+  if(sc) sc.textContent = playerKeys;
+}
+
+function openShop(){
+  document.getElementById('shop-panel').style.display='block';
+  updateKeysDisplay();
+  renderShopItems();
+}
+function closeShop(){document.getElementById('shop-panel').style.display='none';}
+
+function renderShopItems(){
+  const grid = document.getElementById('shop-grid');
+  grid.innerHTML = '';
+  SHOP_ITEMS.forEach(item => {
+    const isOwned = ownedSkins.includes(item.id);
+    const isEquipped = equippedSkin === item.id;
+    const canAfford = playerKeys >= item.price;
+
+    const div = document.createElement('div');
+    div.className = 'shop-item' + (isOwned ? ' owned' : '') + (isEquipped ? ' equipped' : '');
+
+    let btnClass = '', btnText = '';
+    if(isEquipped){ btnClass='btn-equipped'; btnText='EQUIPPED'; }
+    else if(isOwned){ btnClass='btn-owned'; btnText='EQUIP'; }
+    else if(canAfford){ btnClass=''; btnText='PURCHASE'; }
+    else { btnClass='btn-locked'; btnText='LOCKED'; }
+
+    div.innerHTML = `
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-rarity rarity-${item.rarity}">${item.rarity.toUpperCase()}</div>
+      <div class="shop-item-preview"><canvas id="preview-${item.id}" width="180" height="70"></canvas></div>
+      ${item.price > 0 ? `<div class="shop-item-price">${item.price} KEYS</div>` : '<div class="shop-item-price" style="color:rgba(180,180,180,0.4)">DEFAULT</div>'}
+      <button class="shop-item-btn ${btnClass}" data-id="${item.id}">${btnText}</button>
+      <div class="shop-item-desc">${item.desc}</div>
+    `;
+    grid.appendChild(div);
+
+    // Draw 2D preview
+    setTimeout(()=>drawKnifePreview(item.id), 50);
+  });
+
+  grid.querySelectorAll('.shop-item-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const item = SHOP_ITEMS.find(i=>i.id===id);
+      const isOwned = ownedSkins.includes(id);
+      const isEquipped = equippedSkin === id;
+      if(isEquipped) return;
+      if(isOwned){
+        equippedSkin = id;
+        saveShopData();
+        buildKnifeViewModel();
+        updateWeaponName();
+        renderShopItems();
+        return;
+      }
+      if(playerKeys >= item.price){
+        playerKeys -= item.price;
+        ownedSkins.push(id);
+        equippedSkin = id;
+        saveShopData();
+        buildKnifeViewModel();
+        updateWeaponName();
+        renderShopItems();
+        updateKeysDisplay();
+      }
+    });
+  });
+}
+
+function drawKnifePreview(id){
+  const c = document.getElementById('preview-'+id);
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,180,70);
+
+  if(id === 'standard'){
+    // Tactical knife
+    ctx.save();
+    ctx.translate(90,35);
+    // Handle
+    ctx.fillStyle='#1a1a1a';ctx.strokeStyle='#333';ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(-8,-6,50,12,3);ctx.fill();ctx.stroke();
+    // Guard
+    ctx.fillStyle='#888';
+    ctx.fillRect(-12,-8,6,16);
+    // Blade
+    ctx.fillStyle='#ccc';ctx.strokeStyle='#999';
+    ctx.beginPath();ctx.moveTo(-14,0);ctx.lineTo(-60,-4);ctx.lineTo(-65,0);ctx.lineTo(-60,4);ctx.lineTo(-14,0);ctx.fill();ctx.stroke();
+    // Edge highlight
+    ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(-14,-1);ctx.lineTo(-60,-4);ctx.stroke();
+    ctx.restore();
+  }
+  else if(id === 'balisong'){
+    // Butterfly knife
+    ctx.save();
+    ctx.translate(90,35);
+    // Handle halves
+    ctx.fillStyle='#2a1a1a';ctx.strokeStyle='#ff3c3c';ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(5,-12,55,10,2);ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.roundRect(5,2,55,10,2);ctx.fill();ctx.stroke();
+    // Pivot pins
+    ctx.fillStyle='#ff3c3c';
+    ctx.beginPath();ctx.arc(8,-7,2,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(8,7,2,0,Math.PI*2);ctx.fill();
+    // Blade
+    ctx.fillStyle='#ddd';ctx.strokeStyle='#aaa';
+    ctx.beginPath();ctx.moveTo(5,0);ctx.lineTo(-55,-3);ctx.lineTo(-60,0);ctx.lineTo(-55,3);ctx.lineTo(5,0);ctx.fill();ctx.stroke();
+    // Red accent on blade
+    ctx.strokeStyle='rgba(255,60,60,0.3)';ctx.lineWidth=0.7;
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-50,-2);ctx.stroke();
+    ctx.restore();
+  }
+  else if(id === 'karambit'){
+    // Curved karambit claw
+    ctx.save();
+    ctx.translate(90,35);
+    // Handle
+    ctx.fillStyle='#1a0a1e';ctx.strokeStyle='#aa44ff';ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(5,-6,50,12,3);ctx.fill();ctx.stroke();
+    // Ring
+    ctx.strokeStyle='#aa44ff';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.arc(58,0,7,0,Math.PI*2);ctx.stroke();
+    // Curved claw blade — smooth bezier
+    ctx.fillStyle='#ccc';ctx.strokeStyle='#999';ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(5,0);
+    ctx.bezierCurveTo(-10,-8,-30,-28,-42,-20);
+    ctx.lineTo(-44,-17);
+    ctx.bezierCurveTo(-28,-18,-8,-2,3,2);
+    ctx.lineTo(5,0);
+    ctx.fill();ctx.stroke();
+    // Sharp edge highlight
+    ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=0.7;
+    ctx.beginPath();
+    ctx.moveTo(3,2);
+    ctx.bezierCurveTo(-8,-2,-28,-18,-44,-17);
+    ctx.stroke();
+    // Purple accent
+    ctx.strokeStyle='rgba(170,68,255,0.5)';ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.moveTo(0,-2);ctx.bezierCurveTo(-12,-10,-25,-22,-38,-18);ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function updateWeaponName(){
+  const names = {standard:'COMBAT KNIFE',balisong:'BALISONG',karambit:'KARAMBIT'};
+  document.getElementById('weapon-name').textContent = names[equippedSkin] || 'COMBAT KNIFE';
+}
+
+// ===== ADMIN CONSOLE =====
+const ADMIN_CODE = '124680';
+let adminOpen = false;
+let adminAuthed = false;
+
+function openAdmin(){
+  adminOpen = true;
+  adminAuthed = false;
+  document.getElementById('admin-console').style.display = 'block';
+  document.getElementById('admin-code').value = '';
+  document.getElementById('admin-status').textContent = '';
+  document.getElementById('admin-status').className = 'admin-status';
+  document.getElementById('admin-keys-input').style.display = 'none';
+  document.getElementById('admin-keys-amount').value = '';
+  setTimeout(() => document.getElementById('admin-code').focus(), 50);
+}
+
+function closeAdmin(){
+  adminOpen = false;
+  adminAuthed = false;
+  document.getElementById('admin-console').style.display = 'none';
+  if(gameActive && !mobileMode) renderer.domElement.requestPointerLock();
+}
+
+function adminSetKeys(){
+  const val = parseInt(document.getElementById('admin-keys-amount').value);
+  if(isNaN(val) || val < 0){
+    document.getElementById('admin-status').textContent = 'INVALID AMOUNT';
+    document.getElementById('admin-status').className = 'admin-status error';
+    return;
+  }
+  playerKeys = val;
+  saveShopData();
+  updateKeysDisplay();
+  document.getElementById('admin-status').textContent = 'KEYS SET TO ' + val;
+  document.getElementById('admin-status').className = 'admin-status success';
+}
+
+// Listen for admin code input
+document.getElementById('admin-code').addEventListener('input', function(e){
+  const val = e.target.value;
+  if(val === ADMIN_CODE){
+    adminAuthed = true;
+    document.getElementById('admin-status').textContent = 'ACCESS GRANTED';
+    document.getElementById('admin-status').className = 'admin-status success';
+    document.getElementById('admin-keys-input').style.display = 'block';
+    setTimeout(() => document.getElementById('admin-keys-amount').focus(), 50);
+  } else if(val.length >= ADMIN_CODE.length){
+    document.getElementById('admin-status').textContent = 'ACCESS DENIED';
+    document.getElementById('admin-status').className = 'admin-status error';
+    document.getElementById('admin-keys-input').style.display = 'none';
+  }
+});
+
+// Semicolon key opens admin
+document.addEventListener('keydown', function(e){
+  if(adminOpen){
+    if(e.code === 'Escape') closeAdmin();
+    return;
+  }
+  if(e.code === 'Semicolon' && !settingsOpen && document.getElementById('shop-panel').style.display !== 'block'){
+    if(document.pointerLockElement) document.exitPointerLock();
+    openAdmin();
+    e.preventDefault();
+  }
+});
+
+// ===== GAME STATE =====
 let scene,camera,renderer,clock,enemies=[],moveState={forward:false,backward:false,left:false,right:false,sprint:false,crouch:false};
 let mouseSens=0.002,yaw=0,pitch=0,isLocked=false,gameActive=false,gameMode='duel';
 let playerHP=150,playerKills=0,playerDeaths=0,killTarget=5;
 let knifeSwinging=false,knifeCD=0,backstabCD=0,backstabSwinging=false;
 let arenaSize=40,respawnPoints=[],walls=[],wallBoxes=[],knifeGroup,knifeBlade,minimapCtx,ambientParticles=[];
 let isSliding=false,slideTimer=0,slideDir;
-// CHANGED: Faster slide — duration 0.8s, speed 26 (was 0.6 / 18)
 const SLIDE_DURATION=0.8,SLIDE_SPEED=22,SLIDE_SPRINT_BOOST=1.35,SLIDE_HEIGHT=0.9,NORMAL_HEIGHT=1.7;
-  
 let currentHeight=NORMAL_HEIGHT;
-
 let velocityY=0,isGrounded=true;
 const GRAVITY=22,JUMP_FORCE=9;
-// ADDED: Bunny hop momentum system
 let bhopMomentum=null,bhopTimer=0;
 const BHOP_DURATION=0.5,BHOP_SPEED_BONUS=14;
-
 const KNIFE_DAMAGE=40,BACKSTAB_DAMAGE=150,KNIFE_RANGE=3.5,BACKSTAB_RANGE=4.2;
-const BACKSTAB_ANGLE=2.8;
-const BACKSTAB_COOLDOWN=3.0;
+const BACKSTAB_ANGLE=2.8,BACKSTAB_COOLDOWN=3.0;
 const PLAYER_SPEED=8,SPRINT_MULT=1.5,PLAYER_HP=150;
 
+// ===== INSPECT ANIMATION STATE =====
+let isInspecting = false;
+let inspectTimer = 0;
+let inspectDuration = 0;
+
 function init(){
-  loadKeybinds();updateMenuInfo();updateMobileControls();slideDir=new THREE.Vector3();bhopMomentum=new THREE.Vector3();
+  loadKeybinds();loadShopData();updateMenuInfo();updateMobileControls();updateKeysDisplay();
+  slideDir=new THREE.Vector3();bhopMomentum=new THREE.Vector3();
   scene=new THREE.Scene();scene.background=new THREE.Color(0x111118);scene.fog=new THREE.FogExp2(0x111118,0.018);
   camera=new THREE.PerspectiveCamera(80,innerWidth/innerHeight,0.1,200);camera.position.set(0,NORMAL_HEIGHT,0);
   renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
@@ -220,16 +612,416 @@ function createAmbientParticles(){
   const pts=new THREE.Points(geo,new THREE.PointsMaterial({color:0xff3333,size:0.05,transparent:true,opacity:0.4}));scene.add(pts);ambientParticles.push(pts);
 }
 
+// ===== KNIFE VIEW MODELS =====
 function buildKnifeViewModel(){
-  knifeGroup=new THREE.Group();
-  knifeGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.06,0.04,0.22),new THREE.MeshStandardMaterial({color:0x222222,roughness:0.3,metalness:0.8})));
-  const guard=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.02,0.02),new THREE.MeshStandardMaterial({color:0x888888,roughness:0.2,metalness:0.9}));guard.position.z=-0.12;knifeGroup.add(guard);
-  const bs=new THREE.Shape();bs.moveTo(0,0);bs.lineTo(0.025,-0.28);bs.lineTo(0,-0.32);bs.lineTo(-0.025,-0.28);bs.closePath();
-  knifeBlade=new THREE.Mesh(new THREE.ExtrudeGeometry(bs,{depth:0.008,bevelEnabled:false}),new THREE.MeshStandardMaterial({color:0xcccccc,roughness:0.1,metalness:0.95}));
-  knifeBlade.rotation.x=Math.PI/2;knifeBlade.position.set(0,0,-0.13);knifeGroup.add(knifeBlade);
-  knifeGroup.position.set(0.35,-0.3,-0.5);knifeGroup.rotation.set(0.1,-0.3,0);camera.add(knifeGroup);scene.add(camera);
+  // Remove old knife from camera
+  if(knifeGroup){
+    camera.remove(knifeGroup);
+    knifeGroup = null;
+    knifeBlade = null;
+  }
+
+  knifeGroup = new THREE.Group();
+
+  if(equippedSkin === 'standard') buildStandardKnife();
+  else if(equippedSkin === 'balisong') buildBalisongKnife();
+  else if(equippedSkin === 'karambit') buildKarambitKnife();
+
+  camera.add(knifeGroup);
+  if(!scene.children.includes(camera)) scene.add(camera);
+  updateWeaponName();
 }
 
+function buildStandardKnife(){
+  // Improved tactical knife with more detail
+  const handleMat = new THREE.MeshStandardMaterial({color:0x1a1a1a, roughness:0.4, metalness:0.6});
+  const guardMat = new THREE.MeshStandardMaterial({color:0x888888, roughness:0.2, metalness:0.9});
+  const bladeMat = new THREE.MeshStandardMaterial({color:0xdddddd, roughness:0.05, metalness:0.98});
+  const accentMat = new THREE.MeshStandardMaterial({color:0x444444, roughness:0.3, metalness:0.7});
+
+  // Handle with grip texture (multiple segments)
+  const handle = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.045, 0.22), handleMat);
+  knifeGroup.add(handle);
+
+  // Grip grooves
+  for(let i = 0; i < 5; i++){
+    const groove = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.002, 0.015), accentMat);
+    groove.position.set(0, 0.024, -0.08 + i * 0.04);
+    knifeGroup.add(groove);
+  }
+
+  // Pommel
+  const pommel = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.055, 0.025), guardMat);
+  pommel.position.z = 0.115;
+  knifeGroup.add(pommel);
+
+  // Guard
+  const guard = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.025, 0.02), guardMat);
+  guard.position.z = -0.12;
+  knifeGroup.add(guard);
+
+  // Blade - improved shape
+  const bs = new THREE.Shape();
+  bs.moveTo(0.028, 0);
+  bs.lineTo(0.02, -0.30);
+  bs.lineTo(0, -0.35);
+  bs.lineTo(-0.015, -0.30);
+  bs.lineTo(-0.028, 0);
+  bs.closePath();
+
+  knifeBlade = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(bs, {depth: 0.008, bevelEnabled: true, bevelThickness: 0.001, bevelSize: 0.001, bevelSegments: 1}),
+    bladeMat
+  );
+  knifeBlade.rotation.x = Math.PI / 2;
+  knifeBlade.position.set(0, 0, -0.13);
+  knifeGroup.add(knifeBlade);
+
+  // Blade spine detail
+  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.003, 0.005, 0.28), accentMat);
+  spine.position.set(0.02, 0, -0.27);
+  knifeGroup.add(spine);
+
+  knifeGroup.position.set(0.35, -0.3, -0.5);
+  knifeGroup.rotation.set(0.1, -0.3, 0);
+}
+
+function buildBalisongKnife(){
+  const handleMat = new THREE.MeshStandardMaterial({color:0x1a0a0a, roughness:0.3, metalness:0.7});
+  const pinMat = new THREE.MeshStandardMaterial({color:0xff3c3c, roughness:0.2, metalness:0.8, emissive:0x330000});
+  const bladeMat = new THREE.MeshStandardMaterial({color:0xdddddd, roughness:0.05, metalness:0.98});
+  const accentMat = new THREE.MeshStandardMaterial({color:0x882222, roughness:0.3, metalness:0.6});
+
+  // Safe handle (top)
+  const safeHandle = new THREE.Group();
+  const sh = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.015, 0.2), handleMat);
+  safeHandle.add(sh);
+  // Handle detail lines
+  for(let i=0;i<4;i++){
+    const line = new THREE.Mesh(new THREE.BoxGeometry(0.042,0.001,0.008),accentMat);
+    line.position.set(0,0.008,-0.06+i*0.04);
+    safeHandle.add(line);
+  }
+  safeHandle.position.set(0, 0.012, 0);
+  knifeGroup.add(safeHandle);
+  knifeGroup.userData.safeHandle = safeHandle;
+
+  // Bite handle (bottom)
+  const biteHandle = new THREE.Group();
+  const bh = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.015, 0.2), handleMat);
+  biteHandle.add(bh);
+  for(let i=0;i<4;i++){
+    const line = new THREE.Mesh(new THREE.BoxGeometry(0.042,0.001,0.008),accentMat);
+    line.position.set(0,-0.008,-0.06+i*0.04);
+    biteHandle.add(line);
+  }
+  biteHandle.position.set(0, -0.012, 0);
+  knifeGroup.add(biteHandle);
+  knifeGroup.userData.biteHandle = biteHandle;
+
+  // Pivot pins (red accents)
+  const pin1 = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.05, 8), pinMat);
+  pin1.rotation.x = Math.PI/2;
+  pin1.position.set(0, 0, -0.09);
+  knifeGroup.add(pin1);
+
+  // Blade
+  const bs = new THREE.Shape();
+  bs.moveTo(0.018, 0);
+  bs.lineTo(0.012, -0.26);
+  bs.lineTo(0, -0.30);
+  bs.lineTo(-0.008, -0.26);
+  bs.lineTo(-0.018, 0);
+  bs.closePath();
+  knifeBlade = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(bs, {depth: 0.006, bevelEnabled: true, bevelThickness: 0.001, bevelSize: 0.001}),
+    bladeMat
+  );
+  knifeBlade.rotation.x = Math.PI / 2;
+  knifeBlade.position.set(0, 0, -0.1);
+  knifeGroup.add(knifeBlade);
+
+  // Tang pin
+  const tang = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.04, 6), pinMat);
+  tang.rotation.x = Math.PI/2;
+  tang.position.set(0.015, 0, -0.12);
+  knifeGroup.add(tang);
+
+  knifeGroup.position.set(0.35, -0.3, -0.5);
+  knifeGroup.rotation.set(0.1, -0.3, 0);
+}
+
+function buildKarambitKnife(){
+  const handleMat = new THREE.MeshStandardMaterial({color:0x1a0a1e, roughness:0.35, metalness:0.55});
+  const ringMat = new THREE.MeshStandardMaterial({color:0xaa44ff, roughness:0.15, metalness:0.85, emissive:0x1a0033});
+  const bladeMat = new THREE.MeshStandardMaterial({color:0xd0d0d0, roughness:0.05, metalness:0.97, side: THREE.DoubleSide});
+  const accentMat = new THREE.MeshStandardMaterial({color:0x551177, roughness:0.3, metalness:0.5});
+  const guardMat = new THREE.MeshStandardMaterial({color:0x666666, roughness:0.2, metalness:0.9});
+
+  // === HANDLE ===
+  const handle = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.035, 0.16), handleMat);
+  knifeGroup.add(handle);
+
+  // Grip wraps
+  for(let i = 0; i < 6; i++){
+    const wrap = new THREE.Mesh(new THREE.BoxGeometry(0.053, 0.002, 0.006), accentMat);
+    wrap.position.set(0, 0.019, -0.055 + i * 0.022);
+    knifeGroup.add(wrap);
+  }
+
+  // === FINGER RING ===
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.004, 10, 20), ringMat);
+  ring.rotation.x = Math.PI / 2;
+  ring.position.set(0, 0, 0.105);
+  knifeGroup.add(ring);
+
+  // Ring connector to handle
+  const rc = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.018, 0.025), handleMat);
+  rc.position.set(0, 0, 0.088);
+  knifeGroup.add(rc);
+
+  // === GUARD ===
+  const guard = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.028, 0.015), guardMat);
+  guard.position.set(0, 0, -0.09);
+  knifeGroup.add(guard);
+
+  // === CURVED CLAW BLADE ===
+  // Build as a flat curved shape in XZ plane (the plane visible from first person)
+  // Use LatheGeometry-style approach: create blade as thin curved panel
+
+  const bladeGroup = new THREE.Group();
+
+  // Define the claw curve points in local space
+  // X = left/right, Y = up/down (blade curves DOWN), Z = forward/back
+  const curvePoints = [
+    new THREE.Vector3(0, 0, 0),          // base at guard
+    new THREE.Vector3(0, -0.04, -0.06),  // starts curving down
+    new THREE.Vector3(0, -0.10, -0.10),  // deep curve
+    new THREE.Vector3(0, -0.14, -0.10),  // bottom of curve
+    new THREE.Vector3(0, -0.15, -0.06),  // curving back (tip area)
+    new THREE.Vector3(0, -0.13, -0.02),  // tip
+  ];
+
+  const curve = new THREE.CatmullRomCurve3(curvePoints);
+
+  // Create blade as flat ribbon along the curve
+  // Sample the curve and build triangulated geometry
+  const samples = 24;
+  const bladeWidth = 0.012; // half-width of the blade
+  const positions = [];
+  const indices = [];
+
+  for(let i = 0; i <= samples; i++){
+    const t = i / samples;
+    const p = curve.getPoint(t);
+    const tangent = curve.getTangent(t).normalize();
+
+    // Blade thins toward tip
+    const taper = 1.0 - t * 0.4;
+    const w = bladeWidth * taper;
+
+    // Left and right edge of the blade (along X axis)
+    positions.push(p.x - w, p.y, p.z); // left vertex
+    positions.push(p.x + w, p.y, p.z); // right vertex
+  }
+
+  // Create faces
+  for(let i = 0; i < samples; i++){
+    const a = i * 2;
+    const b = i * 2 + 1;
+    const c = (i + 1) * 2;
+    const d = (i + 1) * 2 + 1;
+    indices.push(a, c, b);
+    indices.push(b, c, d);
+  }
+
+  const bladeGeo = new THREE.BufferGeometry();
+  bladeGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  bladeGeo.setIndex(indices);
+  bladeGeo.computeVertexNormals();
+
+  const bladeMesh = new THREE.Mesh(bladeGeo, bladeMat);
+  bladeGroup.add(bladeMesh);
+
+  // Add spine (back/thick edge of blade) for visibility
+  const spinePoints = [];
+  for(let i = 0; i <= samples; i++){
+    spinePoints.push(curve.getPoint(i / samples));
+  }
+  const spineCurve = new THREE.CatmullRomCurve3(spinePoints);
+  const spineGeo = new THREE.TubeGeometry(spineCurve, samples, 0.004, 6, false);
+  const spineMesh = new THREE.Mesh(spineGeo, new THREE.MeshStandardMaterial({
+    color: 0xbbbbbb, roughness: 0.1, metalness: 0.9
+  }));
+  bladeGroup.add(spineMesh);
+
+  // Sharp edge (inner curve) — slightly offset thinner tube for visual definition
+  const edgePoints = [];
+  for(let i = 0; i <= samples; i++){
+    const t = i / samples;
+    const p = curve.getPoint(t);
+    const taper = 1.0 - t * 0.4;
+    edgePoints.push(new THREE.Vector3(p.x + bladeWidth * taper, p.y, p.z));
+  }
+  const edgeCurve = new THREE.CatmullRomCurve3(edgePoints);
+  const edgeGeo = new THREE.TubeGeometry(edgeCurve, samples, 0.002, 4, false);
+  const edgeMesh = new THREE.Mesh(edgeGeo, new THREE.MeshStandardMaterial({
+    color: 0xeeeeee, roughness: 0.02, metalness: 0.99
+  }));
+  bladeGroup.add(edgeMesh);
+
+  bladeGroup.position.set(0, 0, -0.09);
+  knifeGroup.add(bladeGroup);
+  knifeBlade = bladeGroup;
+
+  // Purple glow accent on the blade spine
+  const glowGeo = new THREE.TubeGeometry(spineCurve, samples, 0.002, 4, false);
+  const glowMesh = new THREE.Mesh(glowGeo, new THREE.MeshStandardMaterial({
+    color: 0xaa44ff, emissive: 0x440088, roughness: 0.3, metalness: 0.5, transparent: true, opacity: 0.6
+  }));
+  glowMesh.position.set(0, 0.006, 0);
+  bladeGroup.add(glowMesh);
+
+  knifeGroup.position.set(0.35, -0.28, -0.48);
+  knifeGroup.rotation.set(0.15, -0.25, 0.05);
+}
+
+// ===== INSPECT SYSTEM =====
+function startInspect(){
+  if(isInspecting || knifeSwinging || !gameActive || isSliding) return;
+  isInspecting = true;
+  inspectTimer = 0;
+
+  if(equippedSkin === 'standard') inspectDuration = 2.0;
+  else if(equippedSkin === 'balisong') inspectDuration = 2.8;
+  else if(equippedSkin === 'karambit') inspectDuration = 2.2;
+}
+
+function updateInspectAnimation(dt){
+  if(!isInspecting) return;
+  inspectTimer += dt;
+
+  if(inspectTimer >= inspectDuration){
+    isInspecting = false;
+    inspectTimer = 0;
+    return;
+  }
+
+  const t = inspectTimer / inspectDuration;
+
+  if(equippedSkin === 'standard'){
+    // Standard: bring knife center, tilt to show blade, slow turn
+    const phase = t < 0.3 ? t/0.3 : (t > 0.7 ? (1-t)/0.3 : 1);
+    const eased = phase < 1 ? phase * phase * (3 - 2*phase) : 1;
+
+    knifeGroup.position.set(
+      0.35 - 0.25 * eased,
+      -0.3 + 0.15 * eased,
+      -0.5 + 0.1 * eased
+    );
+    // Tilt to show blade flatside
+    const turnT = Math.max(0, Math.min(1, (t - 0.15) / 0.7));
+    knifeGroup.rotation.set(
+      0.1 + 0.3 * eased * Math.sin(turnT * Math.PI),
+      -0.3 + 0.8 * eased * Math.sin(turnT * Math.PI),
+      0 + 0.4 * eased * Math.sin(turnT * Math.PI * 0.8)
+    );
+  }
+  else if(equippedSkin === 'balisong'){
+    // Balisong: full butterfly flip sequence
+    const phase = t < 0.15 ? t/0.15 : (t > 0.85 ? (1-t)/0.15 : 1);
+    const eased = Math.min(1, phase * phase * (3 - 2*phase));
+
+    // Bring to center
+    knifeGroup.position.set(
+      0.35 - 0.2 * eased,
+      -0.3 + 0.12 * eased,
+      -0.5 + 0.08 * eased
+    );
+
+    // Handles flip animation
+    const safeHandle = knifeGroup.userData.safeHandle;
+    const biteHandle = knifeGroup.userData.biteHandle;
+
+    if(safeHandle && biteHandle){
+      const flipT = Math.max(0, Math.min(1, (t - 0.1) / 0.8));
+
+      // Multi-phase flip: open -> aerial -> catch -> close
+      if(flipT < 0.25){
+        // Phase 1: Open handles outward
+        const p = flipT / 0.25;
+        const ease = p * p * (3 - 2*p);
+        safeHandle.rotation.x = ease * Math.PI * 0.8;
+        biteHandle.rotation.x = -ease * Math.PI * 0.6;
+        safeHandle.position.z = -ease * 0.04;
+        biteHandle.position.z = -ease * 0.03;
+      } else if(flipT < 0.5){
+        // Phase 2: Full rotation (the flip)
+        const p = (flipT - 0.25) / 0.25;
+        const ease = p * p * (3 - 2*p);
+        safeHandle.rotation.x = Math.PI * 0.8 + ease * Math.PI * 1.2;
+        biteHandle.rotation.x = -Math.PI * 0.6 - ease * Math.PI * 1.4;
+        // Whole knife rolls
+        knifeGroup.rotation.z = ease * Math.PI * 0.3;
+      } else if(flipT < 0.75){
+        // Phase 3: Catch — handles swing back
+        const p = (flipT - 0.5) / 0.25;
+        const ease = p * p * (3 - 2*p);
+        safeHandle.rotation.x = Math.PI * 2.0 - ease * Math.PI * 1.5;
+        biteHandle.rotation.x = -Math.PI * 2.0 + ease * Math.PI * 1.5;
+        safeHandle.position.z = -0.04 + ease * 0.04;
+        biteHandle.position.z = -0.03 + ease * 0.03;
+        knifeGroup.rotation.z = Math.PI * 0.3 - ease * Math.PI * 0.3;
+      } else {
+        // Phase 4: Close — snap shut
+        const p = (flipT - 0.75) / 0.25;
+        const ease = p * p * (3 - 2*p);
+        safeHandle.rotation.x = Math.PI * 0.5 * (1 - ease);
+        biteHandle.rotation.x = -Math.PI * 0.5 * (1 - ease);
+        safeHandle.position.z = 0;
+        biteHandle.position.z = 0;
+      }
+    }
+
+    // Subtle wrist roll during flip
+    const rollT = Math.max(0, Math.min(1, (t - 0.2) / 0.6));
+    knifeGroup.rotation.set(
+      0.1 + 0.2 * eased,
+      -0.3 + Math.sin(rollT * Math.PI * 2) * 0.4 * eased,
+      knifeGroup.rotation.z || 0
+    );
+  }
+  else if(equippedSkin === 'karambit'){
+    // Karambit: finger spin — the iconic twirl around the ring finger
+    const phase = t < 0.15 ? t/0.15 : (t > 0.85 ? (1-t)/0.15 : 1);
+    const eased = Math.min(1, phase * phase * (3 - 2*phase));
+
+    // Bring to center
+    knifeGroup.position.set(
+      0.35 - 0.15 * eased,
+      -0.3 + 0.1 * eased,
+      -0.5 + 0.12 * eased
+    );
+
+    const spinT = Math.max(0, Math.min(1, (t - 0.1) / 0.8));
+
+    // Full 360 spin around finger ring axis
+    // The karambit spins around the Z axis (pommel ring)
+    const spinAngle = spinT * Math.PI * 2;
+    // Add a second partial spin for style
+    const extraSpin = spinT > 0.7 ? (spinT - 0.7) / 0.3 * Math.PI * 0.5 : 0;
+
+    knifeGroup.rotation.set(
+      0.1 + Math.sin(spinT * Math.PI) * 0.3 * eased,
+      -0.3 + 0.5 * eased,
+      (spinAngle + extraSpin) * eased
+    );
+
+    // Blade follows naturally with the group rotation
+  }
+}
+
+// ===== AI ENEMIES =====
 class AIEnemy{
   constructor(id){this.id=id;this.hp=PLAYER_HP;this.kills=0;
     this.speed=3.5+Math.random()*1.5;
@@ -281,25 +1073,90 @@ class AIEnemy{
   }
   performAttack(){this.attackCD=2.0+Math.random()*1.0;if(this.distToPlayer()>KNIFE_RANGE+0.5)return;takeDamage(KNIFE_DAMAGE,this,false);}
   takeDamageFromPlayer(amt,bs2=false){if(!this.alive)return;this.hp-=amt;this.mesh.children[0].material.emissive.setHex(0xff0000);setTimeout(()=>{if(this.mesh.children[0])this.mesh.children[0].material.emissive.setHex(0);},100);if(this.hp<=0)this.die(bs2);}
-  die(bs2){this.alive=false;this.mesh.visible=false;this.respawnTimer=3;playerKills++;updateHUD();addKillFeed(bs2?'YOU <span class="backstab">BACKSTABBED</span> ENEMY '+this.id:'YOU → ENEMY '+this.id);showHitmarker(true);checkRoundOver();}
+  die(bs2){
+    this.alive=false;this.mesh.visible=false;this.respawnTimer=3;playerKills++;killStreak++;updateHUD();
+    addKillFeed(bs2?'YOU <span class="backstab">BACKSTABBED</span> ENEMY '+this.id:'YOU → ENEMY '+this.id);showHitmarker(true);
+
+    // Award keys
+    if(bs2){
+      awardKeys(BACKSTAB_REWARD, 'BACKSTAB KILL');
+    } else {
+      awardKeys(KILL_REWARD, 'KILL');
+    }
+
+    // Streak bonuses
+    if(killStreak === 3) awardKeys(STREAK_3_REWARD, '3 KILL STREAK');
+    if(killStreak === 5) awardKeys(STREAK_5_REWARD, '5 KILL STREAK');
+    if(killStreak === 10) awardKeys(STREAK_10_REWARD, '10 KILL STREAK');
+
+    updateStreakDisplay();
+    checkRoundOver();
+  }
   respawn(){this.alive=true;this.hp=PLAYER_HP;const sp=respawnPoints[Math.floor(Math.random()*respawnPoints.length)];this.mesh.position.set(sp.x,0,sp.z);this.mesh.visible=true;this.state='patrol';this.patrolTarget=this.randomPoint();this.thinkCD=1+Math.random();}
 }
 
+function updateStreakDisplay(){
+  const sd = document.getElementById('streak-display');
+  if(killStreak >= 2){
+    sd.style.display = 'block';
+    document.getElementById('streak-count').textContent = killStreak;
+    const labels = {2:'DOUBLE KILL',3:'TRIPLE KILL',4:'QUAD KILL',5:'RAMPAGE',6:'UNSTOPPABLE',7:'GODLIKE',8:'LEGENDARY',9:'BEYOND GODLIKE',10:'ASCENDED'};
+    document.getElementById('streak-label').textContent = labels[Math.min(killStreak,10)] || 'KILL STREAK';
+    // Color escalation
+    const heat = Math.min(1, killStreak / 10);
+    const r = 255, g = Math.round(150 * (1-heat)), b = Math.round(50 * (1-heat));
+    document.getElementById('streak-count').style.color = `rgb(${r},${g},${b})`;
+    document.getElementById('streak-count').style.textShadow = `0 0 ${10+killStreak*3}px rgba(${r},${g},${b},0.5)`;
+  } else {
+    sd.style.display = 'none';
+  }
+}
+
 function takeDamage(amt,attacker,bs2){if(!gameActive)return;playerHP-=amt;const ov=document.getElementById('damage-overlay');ov.style.border='8px solid rgba(255,0,0,0.6)';setTimeout(()=>ov.style.border='0px solid rgba(255,0,0,0)',300);if(bs2)addKillFeed('ENEMY '+attacker.id+' <span class="backstab">BACKSTABBED</span> YOU');if(playerHP<=0){playerHP=0;playerDie(attacker,bs2);}updateHUD();}
-function playerDie(att,bs2){gameActive=false;playerDeaths++;if(att)att.kills++;document.getElementById('death-screen').style.display='flex';document.getElementById('death-by').textContent=att?(bs2?'BACKSTABBED':'KILLED')+' BY ENEMY '+att.id:'ELIMINATED';if(document.pointerLockElement)document.exitPointerLock();checkRoundOver();}
-function respawn(){document.getElementById('death-screen').style.display='none';playerHP=PLAYER_HP;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;bhopTimer=0;const sp=respawnPoints[Math.floor(Math.random()*respawnPoints.length)];camera.position.set(sp.x,NORMAL_HEIGHT,sp.z);yaw=Math.random()*Math.PI*2;pitch=0;gameActive=true;updateHUD();updateMobileControls();if(!mobileMode)renderer.domElement.requestPointerLock();}
-function checkRoundOver(){if(gameMode==='duel'){if(playerKills>=killTarget)return showRoundOver('YOU WIN!');for(const e of enemies)if(e.kills>=killTarget)return showRoundOver('ENEMY '+e.id+' WINS');}}
-function showRoundOver(w){gameActive=false;if(document.pointerLockElement)document.exitPointerLock();document.getElementById('death-screen').style.display='none';document.getElementById('round-over').style.display='flex';document.getElementById('winner-text').textContent=w;let s='YOU: '+playerKills+' KILLS / '+playerDeaths+' DEATHS\n';enemies.forEach(e=>{s+='ENEMY '+e.id+': '+e.kills+' KILLS\n';});document.getElementById('scores-summary').textContent=s;}
-function backToMenu(){document.getElementById('round-over').style.display='none';document.getElementById('menu').style.display='flex';['hud','crosshair','kill-feed','minimap','slide-indicator','pause-hint','mobile-controls'].forEach(id=>document.getElementById(id).style.display='none');enemies.forEach(e=>scene.remove(e.mesh));enemies=[];gameActive=false;}
+
+function playerDie(att,bs2){
+  gameActive=false;playerDeaths++;killStreak=0;updateStreakDisplay();
+  if(att)att.kills++;
+  document.getElementById('death-screen').style.display='flex';
+  document.getElementById('death-by').textContent=att?(bs2?'BACKSTABBED':'KILLED')+' BY ENEMY '+att.id:'ELIMINATED';
+  if(document.pointerLockElement)document.exitPointerLock();checkRoundOver();
+}
+
+function respawn(){document.getElementById('death-screen').style.display='none';playerHP=PLAYER_HP;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;bhopTimer=0;isInspecting=false;inspectTimer=0;const sp=respawnPoints[Math.floor(Math.random()*respawnPoints.length)];camera.position.set(sp.x,NORMAL_HEIGHT,sp.z);yaw=Math.random()*Math.PI*2;pitch=0;gameActive=true;updateHUD();updateMobileControls();if(!mobileMode)renderer.domElement.requestPointerLock();}
+
+function checkRoundOver(){
+  if(gameMode==='duel'){
+    if(playerKills>=killTarget){awardKeys(WIN_REWARD,'VICTORY BONUS');return showRoundOver('YOU WIN!');}
+    for(const e of enemies)if(e.kills>=killTarget)return showRoundOver('ENEMY '+e.id+' WINS');
+  }
+}
+
+function showRoundOver(w){
+  gameActive=false;if(document.pointerLockElement)document.exitPointerLock();
+  document.getElementById('death-screen').style.display='none';
+  document.getElementById('round-over').style.display='flex';
+  document.getElementById('winner-text').textContent=w;
+  let s='YOU: '+playerKills+' KILLS / '+playerDeaths+' DEATHS\n';
+  enemies.forEach(e=>{s+='ENEMY '+e.id+': '+e.kills+' KILLS\n';});
+  document.getElementById('scores-summary').textContent=s;
+  document.getElementById('round-keys-earned').textContent='KEYS EARNED THIS ROUND: +' + roundKeysEarned;
+}
+
+function backToMenu(){
+  document.getElementById('round-over').style.display='none';
+  document.getElementById('menu').style.display='flex';
+  ['hud','crosshair','kill-feed','minimap','slide-indicator','pause-hint','mobile-controls','streak-display'].forEach(id=>document.getElementById(id).style.display='none');
+  enemies.forEach(e=>scene.remove(e.mesh));enemies=[];gameActive=false;
+}
 
 function knifeSlash(){
-  if(knifeCD>0||!gameActive||isSliding)return;knifeCD=0.5;knifeSwinging=true;backstabSwinging=false;setTimeout(()=>{knifeSwinging=false;},300);
+  if(knifeCD>0||!gameActive||isSliding||isInspecting)return;knifeCD=0.5;knifeSwinging=true;backstabSwinging=false;isInspecting=false;setTimeout(()=>{knifeSwinging=false;},300);
   const cp=camera.position.clone(),cd=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion).normalize();
   for(const e of enemies){if(!e.alive)continue;const ec=e.mesh.position.clone();ec.y=1.2;const te=ec.sub(cp);const dist=te.length();te.normalize();if(dist>KNIFE_RANGE+0.5||cd.dot(te)<0.5)continue;e.takeDamageFromPlayer(KNIFE_DAMAGE,false);showHitmarker(e.hp<=0);break;}
 }
 
 function knifeBackstab(){
-  if(backstabCD>0||!gameActive||isSliding)return;backstabCD=BACKSTAB_COOLDOWN;backstabSwinging=true;knifeSwinging=true;setTimeout(()=>{knifeSwinging=false;backstabSwinging=false;},400);
+  if(backstabCD>0||!gameActive||isSliding||isInspecting)return;backstabCD=BACKSTAB_COOLDOWN;backstabSwinging=true;knifeSwinging=true;isInspecting=false;setTimeout(()=>{knifeSwinging=false;backstabSwinging=false;},400);
   const cp=camera.position.clone(),cd=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion).normalize();
   for(const e of enemies){if(!e.alive)continue;const ec=e.mesh.position.clone();ec.y=1.2;const te=ec.sub(cp);const dist=te.length();te.normalize();
     if(dist>BACKSTAB_RANGE+1.0||cd.dot(te)<0.3)continue;
@@ -309,7 +1166,7 @@ function knifeBackstab(){
 }
 
 function showHitmarker(kill){const h=document.getElementById('hitmarker');h.style.display='block';h.style.opacity=1;h.className=kill?'hitmarker-kill':'';setTimeout(()=>{h.style.opacity=0;},150);setTimeout(()=>{h.style.display='none';},200);}
-function updateHUD(){const p=Math.max(0,playerHP/PLAYER_HP*100);document.getElementById('health-bar').style.width=p+'%';document.getElementById('health-text').textContent='HEALTH '+Math.round(playerHP)+'/'+PLAYER_HP;document.getElementById('score-display').textContent=playerKills;document.getElementById('health-bar').style.background=p<30?'linear-gradient(90deg,#ff0000,#cc0000)':'linear-gradient(90deg,#ff1a1a,#ff4444)';}
+function updateHUD(){const p=Math.max(0,playerHP/PLAYER_HP*100);document.getElementById('health-bar').style.width=p+'%';document.getElementById('health-text').textContent='HEALTH '+Math.round(playerHP)+'/'+PLAYER_HP;document.getElementById('score-display').textContent=playerKills;document.getElementById('health-bar').style.background=p<30?'linear-gradient(90deg,#ff0000,#cc0000)':'linear-gradient(90deg,#ff1a1a,#ff4444)';updateKeysDisplay();}
 function updateBackstabCDBar(){const p=Math.max(0,1-backstabCD/BACKSTAB_COOLDOWN)*100;document.getElementById('backstab-cd-bar').style.width=p+'%';document.getElementById('backstab-cd-bar').style.background=p>=100?'linear-gradient(90deg,#aa44ff,#dd66ff)':'linear-gradient(90deg,#553388,#774499)';document.getElementById('backstab-cd-label').textContent=backstabCD>0?'BACKSTAB '+backstabCD.toFixed(1)+'s':'BACKSTAB READY';}
 function addKillFeed(msg){const f=document.getElementById('kill-feed'),d=document.createElement('div');d.className='kill-msg';d.innerHTML=msg;f.appendChild(d);setTimeout(()=>d.remove(),3500);}
 
@@ -323,61 +1180,36 @@ function drawMinimap(){
 
 function trySlide(){
   if(isSliding || !gameActive || !isGrounded) return;
-
-
+  isInspecting=false;
   const forward = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
-  const right   = new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
-
-  forward.y = 0;
-  right.y   = 0;
-
-  forward.normalize();
-  right.normalize();
-
+  const right = new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
+  forward.y=0;right.y=0;forward.normalize();right.normalize();
   const moveDir = new THREE.Vector3();
-
-  if(moveState.forward)  moveDir.add(forward);
+  if(moveState.forward) moveDir.add(forward);
   if(moveState.backward) moveDir.sub(forward);
-  if(moveState.right)    moveDir.add(right);
-  if(moveState.left)     moveDir.sub(right);
-
-  if(moveDir.length() === 0){
-    moveDir.copy(forward); // default forward
-  } else {
-    moveDir.normalize();
-  }
-
-  isSliding = true;
-  slideTimer = SLIDE_DURATION;
-  slideDir.copy(moveDir);
+  if(moveState.right) moveDir.add(right);
+  if(moveState.left) moveDir.sub(right);
+  if(moveDir.length()===0) moveDir.copy(forward);
+  else moveDir.normalize();
+  isSliding=true;slideTimer=SLIDE_DURATION;slideDir.copy(moveDir);
 }
 
-
-// CHANGED: tryJump now supports bunny hopping — jump while sliding to launch with momentum
 function tryJump(){
   if(!gameActive)return;
   if(isSliding){
-    // BUNNY HOP: cancel slide, keep slide direction as momentum, jump higher
-    bhopMomentum.copy(slideDir).normalize();
-    bhopTimer=BHOP_DURATION;
-    isSliding=false;slideTimer=0;
-    currentHeight=NORMAL_HEIGHT;
-    velocityY=JUMP_FORCE*1.15; // slightly boosted jump
-    isGrounded=false;
-    return;
+    bhopMomentum.copy(slideDir).normalize();bhopTimer=BHOP_DURATION;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=JUMP_FORCE*1.15;isGrounded=false;return;
   }
-  if(!isGrounded)return;
-  velocityY=JUMP_FORCE;isGrounded=false;
+  if(!isGrounded)return;velocityY=JUMP_FORCE;isGrounded=false;
 }
 
 function updateSlide(dt){
   const si=document.getElementById('slide-indicator');
   if(!isSliding){si.style.opacity='0';return;}
   slideTimer-=dt;si.style.opacity='1';if(slideTimer<=0){isSliding=false;return;}
-  const t = slideTimer / SLIDE_DURATION;
-const speedMultiplier = moveState.sprint ? SLIDE_SPRINT_BOOST : 1;
-const spd = SLIDE_SPEED * speedMultiplier * t;
-currentHeight+=(SLIDE_HEIGHT-currentHeight)*Math.min(1,dt*20);
+  const t=slideTimer/SLIDE_DURATION;
+  const speedMultiplier=moveState.sprint?SLIDE_SPRINT_BOOST:1;
+  const spd=SLIDE_SPEED*speedMultiplier*t;
+  currentHeight+=(SLIDE_HEIGHT-currentHeight)*Math.min(1,dt*20);
   const mv=slideDir.clone().multiplyScalar(spd*dt),np=camera.position.clone().add(mv);np.y=currentHeight;np.x=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.x));np.z=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.z));
   const tb=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(np.x,0.5,np.z),new THREE.Vector3(0.8,1,0.8));let bl=false;for(const w of wallBoxes)if(tb.intersectsBox(w)){bl=true;break;}
   if(!bl){camera.position.x=np.x;camera.position.z=np.z;}else isSliding=false;
@@ -387,9 +1219,10 @@ function setupEvents(){
   function getAction(code){for(const[a,b]of Object.entries(keybinds))if(b===code)return a;return null;}
   document.addEventListener('keydown',e=>{
     if(listeningFor&&settingsOpen){if(e.code==='Escape'){const b=document.querySelector('.keybind-btn[data-action="'+listeningFor+'"]');if(b){b.textContent=codeToDisplay(keybinds[listeningFor]);b.classList.remove('listening');}listeningFor=null;return;}finishListening(e.code);e.preventDefault();return;}
-    if(e.code==='Escape'){if(settingsOpen)closeSettings();else if(gameActive){if(document.pointerLockElement)document.exitPointerLock();openSettings();}return;}
-    if(settingsOpen)return;const a=getAction(e.code);if(!a)return;
-    switch(a){case'forward':moveState.forward=true;break;case'backward':moveState.backward=true;break;case'left':moveState.left=true;break;case'right':moveState.right=true;break;case'sprint':moveState.sprint=true;break;case'crouch':moveState.crouch=true;trySlide();break;case'jump':tryJump();break;}
+    if(e.code==='Escape'){if(adminOpen){closeAdmin();return;}if(document.getElementById('shop-panel').style.display==='block'){closeShop();return;}if(settingsOpen)closeSettings();else if(gameActive){if(document.pointerLockElement)document.exitPointerLock();openSettings();}return;}
+    if(settingsOpen||adminOpen||document.getElementById('shop-panel').style.display==='block')return;
+    const a=getAction(e.code);if(!a)return;
+    switch(a){case'forward':moveState.forward=true;break;case'backward':moveState.backward=true;break;case'left':moveState.left=true;break;case'right':moveState.right=true;break;case'sprint':moveState.sprint=true;break;case'crouch':moveState.crouch=true;trySlide();break;case'jump':tryJump();break;case'inspect':startInspect();break;}
   });
   document.addEventListener('keyup',e=>{if(settingsOpen)return;const a=getAction(e.code);if(!a)return;switch(a){case'forward':moveState.forward=false;break;case'backward':moveState.backward=false;break;case'left':moveState.left=false;break;case'right':moveState.right=false;break;case'sprint':moveState.sprint=false;break;case'crouch':moveState.crouch=false;break;}});
   document.addEventListener('mousemove',e=>{if(mobileMode||!isLocked||settingsOpen)return;yaw-=e.movementX*mouseSens;pitch-=e.movementY*mouseSens;pitch=Math.max(-Math.PI/2+0.1,Math.min(Math.PI/2-0.1,pitch));});
@@ -399,9 +1232,9 @@ function setupEvents(){
     renderer.domElement.addEventListener('touchmove',e=>{if(!mobileMode||!gameActive||e.touches.length!==1)return;const dx=e.touches[0].clientX-touchStartX,dy=e.touches[0].clientY-touchStartY;yaw-=dx*mouseSens*2;pitch-=dy*mouseSens*2;pitch=Math.max(-Math.PI/2+0.1,Math.min(Math.PI/2-0.1,pitch));touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;});
   }
   document.addEventListener('mousedown',e=>{
-    if(settingsOpen){if(listeningFor){finishListening('Mouse'+e.button);e.preventDefault();}return;}
+    if(settingsOpen||adminOpen||document.getElementById('shop-panel').style.display==='block'){if(listeningFor){finishListening('Mouse'+e.button);e.preventDefault();}return;}
     if(!isLocked)return;const code='Mouse'+e.button;
-    for(const[a,b]of Object.entries(keybinds)){if(b===code){if(a==='slash')knifeSlash();else if(a==='backstab')knifeBackstab();else if(a==='crouch'){moveState.crouch=true;trySlide();}else if(a==='jump')tryJump();}}
+    for(const[a,b]of Object.entries(keybinds)){if(b===code){if(a==='slash')knifeSlash();else if(a==='backstab')knifeBackstab();else if(a==='crouch'){moveState.crouch=true;trySlide();}else if(a==='jump')tryJump();else if(a==='inspect')startInspect();}}
   });
   document.addEventListener('mouseup',e=>{if(settingsOpen)return;const code='Mouse'+e.button;for(const[a,b]of Object.entries(keybinds))if(b===code&&a==='crouch')moveState.crouch=false;});
   document.addEventListener('contextmenu',e=>e.preventDefault());
@@ -415,7 +1248,6 @@ function setupMobileControls(){
   jArea.addEventListener('touchstart',e=>{if(!mobileMode||!gameActive)return;e.preventDefault();const t=e.touches[0];joystickActive=true;joystickId=t.identifier;const r=jArea.getBoundingClientRect();joystickOrigin={x:r.left+r.width/2,y:r.top+r.height/2};handleJoystick(t.clientX,t.clientY,jStick);},{passive:false});
   jArea.addEventListener('touchmove',e=>{if(!joystickActive||!mobileMode)return;e.preventDefault();for(let t of e.touches){if(t.identifier===joystickId){handleJoystick(t.clientX,t.clientY,jStick);break;}}},{passive:false});
   jArea.addEventListener('touchend',e=>{if(!joystickActive)return;e.preventDefault();for(let t of e.changedTouches){if(t.identifier===joystickId){joystickActive=false;joystickId=null;jStick.style.transform='translate(-50%,-50%)';moveState.forward=moveState.backward=moveState.left=moveState.right=false;break;}}},{passive:false});
-
   document.getElementById('mobile-slash').addEventListener('touchstart',e=>{e.preventDefault();knifeSlash();},{passive:false});
   document.getElementById('mobile-backstab').addEventListener('touchstart',e=>{e.preventDefault();knifeBackstab();},{passive:false});
   document.getElementById('mobile-jump').addEventListener('touchstart',e=>{e.preventDefault();tryJump();},{passive:false});
@@ -426,26 +1258,18 @@ function handleJoystick(x,y,stick){
   const dx=x-joystickOrigin.x,dy=y-joystickOrigin.y,dist=Math.sqrt(dx*dx+dy*dy),maxDist=60;
   let nx=dx,ny=dy;if(dist>maxDist){nx=dx/dist*maxDist;ny=dy/dist*maxDist;}
   stick.style.transform=`translate(calc(-50% + ${nx}px), calc(-50% + ${ny}px))`;
-  const threshold=15,angle=Math.atan2(dy,dx);
-  moveState.forward=moveState.backward=moveState.left=moveState.right=false;
-  if(dist>threshold){
-    const deg=angle*180/Math.PI;
-    if(deg>-45&&deg<=45)moveState.right=true;
-    else if(deg>45&&deg<=135)moveState.backward=true;
-    else if(deg<-45&&deg>=-135)moveState.forward=true;
-    else moveState.left=true;
-  }
+  const threshold=15;moveState.forward=moveState.backward=moveState.left=moveState.right=false;
+  if(dist>threshold){const deg=Math.atan2(dy,dx)*180/Math.PI;if(deg>-45&&deg<=45)moveState.right=true;else if(deg>45&&deg<=135)moveState.backward=true;else if(deg<-45&&deg>=-135)moveState.forward=true;else moveState.left=true;}
 }
 
-
 function startGame(mode){
-  gameMode=mode;killTarget=mode==='duel'?5:999;playerKills=0;playerDeaths=0;playerHP=PLAYER_HP;backstabCD=0;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;bhopTimer=0;
+  gameMode=mode;killTarget=mode==='duel'?5:999;playerKills=0;playerDeaths=0;playerHP=PLAYER_HP;backstabCD=0;isSliding=false;slideTimer=0;currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;bhopTimer=0;killStreak=0;roundKeysEarned=0;isInspecting=false;inspectTimer=0;
   enemies.forEach(e=>scene.remove(e.mesh));enemies=[];const n=mode==='duel'?1:3;for(let i=1;i<=n;i++)enemies.push(new AIEnemy(i));
   const sp=respawnPoints[0];camera.position.set(sp.x,NORMAL_HEIGHT,sp.z);yaw=0;pitch=0;
   document.getElementById('menu').style.display='none';
   ['hud','crosshair','kill-feed','minimap','slide-indicator','pause-hint'].forEach(id=>document.getElementById(id).style.display='block');
   document.getElementById('death-screen').style.display='none';document.getElementById('round-over').style.display='none';
-  gameActive=true;updateHUD();updateMobileControls();if(!mobileMode)renderer.domElement.requestPointerLock();
+  gameActive=true;updateHUD();updateMobileControls();buildKnifeViewModel();if(!mobileMode)renderer.domElement.requestPointerLock();
 }
 
 function updatePlayer(dt){
@@ -454,23 +1278,19 @@ function updatePlayer(dt){
   camera.quaternion.setFromEuler(new THREE.Euler(pitch,yaw,0,'YXZ'));
   backstabCD=Math.max(0,backstabCD-dt);updateBackstabCDBar();
 
-  // === JUMP PHYSICS ===
   if(!isSliding){
-    velocityY-=GRAVITY*dt;
-    currentHeight+=velocityY*dt;
+    velocityY-=GRAVITY*dt;currentHeight+=velocityY*dt;
     if(currentHeight<=NORMAL_HEIGHT){currentHeight=NORMAL_HEIGHT;velocityY=0;isGrounded=true;}
     else{isGrounded=false;}
     if(currentHeight>5.5){currentHeight=5.5;velocityY=0;}
   }
 
-  // === BUNNY HOP MOMENTUM — carries slide speed into the air ===
   bhopTimer=Math.max(0,bhopTimer-dt);
   if(bhopTimer>0&&!isSliding){
     const bhopSpd=BHOP_SPEED_BONUS*(bhopTimer/BHOP_DURATION);
     const mv=bhopMomentum.clone().multiplyScalar(bhopSpd*dt);
     const np=camera.position.clone().add(mv);
-    np.x=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.x));
-    np.z=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.z));
+    np.x=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.x));np.z=Math.max(-arenaSize+0.8,Math.min(arenaSize-0.8,np.z));
     const tb=new THREE.Box3().setFromCenterAndSize(new THREE.Vector3(np.x,1,np.z),new THREE.Vector3(0.8,2,0.8));
     let bl=false;for(const w of wallBoxes)if(tb.intersectsBox(w)){bl=true;break;}
     if(!bl){camera.position.x=np.x;camera.position.z=np.z;}else{bhopTimer=0;}
@@ -492,17 +1312,97 @@ function updatePlayer(dt){
 }
 
 function animateKnife(){
-  if(!knifeGroup)return;const bp=new THREE.Vector3(0.35,-0.3,-0.5),br=new THREE.Euler(0.1,-0.3,0);
-  if(isSliding){knifeGroup.position.set(0.3,-0.45,-0.4);knifeGroup.rotation.set(0.5,-0.1,-0.2);return;}
+  if(!knifeGroup)return;
+
+  // Inspect animation takes priority
+  if(isInspecting){
+    updateInspectAnimation(clock.getDelta ? 0.016 : 0.016);
+    return;
+  }
+
+  // Reset balisong handles when not inspecting
+  if(equippedSkin === 'balisong' && knifeGroup.userData.safeHandle){
+    if(!knifeSwinging){
+      knifeGroup.userData.safeHandle.rotation.x *= 0.9;
+      knifeGroup.userData.biteHandle.rotation.x *= 0.9;
+      knifeGroup.userData.safeHandle.position.z *= 0.9;
+      knifeGroup.userData.biteHandle.position.z *= 0.9;
+    }
+  }
+
+  const bp = getBasePosition();
+  const br = getBaseRotation();
+
+  if(isSliding){
+    knifeGroup.position.set(bp.x - 0.05, bp.y - 0.15, bp.z + 0.1);
+    knifeGroup.rotation.set(0.5, br.y + 0.2, -0.2);
+    return;
+  }
+
   if(knifeSwinging){
-    if(backstabSwinging){const t=Math.min(1,(BACKSTAB_COOLDOWN-backstabCD)/0.4);knifeGroup.position.set(bp.x-0.1,bp.y+0.05*Math.sin(t*Math.PI),bp.z-0.25*Math.sin(t*Math.PI));knifeGroup.rotation.set(br.x+0.3*Math.sin(t*Math.PI),br.y,br.z);}
-    else{const t=1-knifeCD/0.5;knifeGroup.position.set(bp.x-0.2*t,bp.y+0.1*Math.sin(t*Math.PI),bp.z+0.15*t);knifeGroup.rotation.set(br.x-0.5*t,br.y+1.2*t,br.z-0.3*t);}
-  }else{const sw=Math.sin(clock.elapsedTime*2)*0.008,bo=Math.sin(clock.elapsedTime*1.5)*0.005;knifeGroup.position.set(bp.x+sw,bp.y+bo,bp.z);knifeGroup.rotation.copy(br);}
+    if(backstabSwinging){
+      const t=Math.min(1,(BACKSTAB_COOLDOWN-backstabCD)/0.4);
+      if(equippedSkin === 'karambit'){
+        // Karambit backstab: hooking motion
+        knifeGroup.position.set(bp.x-0.15,bp.y+0.08*Math.sin(t*Math.PI),bp.z-0.3*Math.sin(t*Math.PI));
+        knifeGroup.rotation.set(br.x+0.5*Math.sin(t*Math.PI),br.y-0.3,br.z+0.2*Math.sin(t*Math.PI));
+      } else if(equippedSkin === 'balisong'){
+        // Balisong backstab: quick stab
+        knifeGroup.position.set(bp.x-0.1,bp.y+0.05*Math.sin(t*Math.PI),bp.z-0.3*Math.sin(t*Math.PI));
+        knifeGroup.rotation.set(br.x+0.4*Math.sin(t*Math.PI),br.y,br.z);
+      } else {
+        knifeGroup.position.set(bp.x-0.1,bp.y+0.05*Math.sin(t*Math.PI),bp.z-0.25*Math.sin(t*Math.PI));
+        knifeGroup.rotation.set(br.x+0.3*Math.sin(t*Math.PI),br.y,br.z);
+      }
+    } else {
+      const t=1-knifeCD/0.5;
+      if(equippedSkin === 'karambit'){
+        // Karambit slash: wide sweeping hook
+        knifeGroup.position.set(bp.x-0.3*t,bp.y+0.12*Math.sin(t*Math.PI),bp.z+0.1*t);
+        knifeGroup.rotation.set(br.x-0.3*t,br.y+1.5*t,br.z-0.5*t);
+      } else if(equippedSkin === 'balisong'){
+        // Balisong slash: quick flick
+        knifeGroup.position.set(bp.x-0.15*t,bp.y+0.08*Math.sin(t*Math.PI),bp.z+0.2*t);
+        knifeGroup.rotation.set(br.x-0.6*t,br.y+1.0*t,br.z-0.2*t);
+      } else {
+        knifeGroup.position.set(bp.x-0.2*t,bp.y+0.1*Math.sin(t*Math.PI),bp.z+0.15*t);
+        knifeGroup.rotation.set(br.x-0.5*t,br.y+1.2*t,br.z-0.3*t);
+      }
+    }
+  } else {
+    // Idle sway
+    const sw=Math.sin(clock.elapsedTime*2)*0.008;
+    const bo=Math.sin(clock.elapsedTime*1.5)*0.005;
+    knifeGroup.position.set(bp.x+sw,bp.y+bo,bp.z);
+    knifeGroup.rotation.set(br.x,br.y,br.z);
+  }
 }
 
+function getBasePosition(){
+  if(equippedSkin === 'karambit') return new THREE.Vector3(0.35, -0.28, -0.48);
+  if(equippedSkin === 'balisong') return new THREE.Vector3(0.33, -0.3, -0.5);
+  return new THREE.Vector3(0.35, -0.3, -0.5);
+}
+function getBaseRotation(){
+  if(equippedSkin === 'karambit') return new THREE.Euler(0.15, -0.25, 0.05);
+  if(equippedSkin === 'balisong') return new THREE.Euler(0.1, -0.3, 0);
+  return new THREE.Euler(0.1, -0.3, 0);
+}
+
+// Track dt for inspect separately since clock.getDelta() is called in animate
+let lastInspectTime = 0;
+
 function animate(){
-  requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),0.05);
-  updatePlayer(dt);animateKnife();enemies.forEach(e=>e.update(dt));drawMinimap();
+  requestAnimationFrame(animate);
+  const dt=Math.min(clock.getDelta(),0.05);
+  lastInspectTime = dt;
+  updatePlayer(dt);
+
+  // Update inspect with actual dt
+  if(isInspecting) updateInspectAnimation(dt);
+  animateKnife();
+
+  enemies.forEach(e=>e.update(dt));drawMinimap();
   ambientParticles.forEach(p=>{const pos=p.geometry.attributes.position;for(let i=0;i<pos.count;i++){pos.array[i*3+1]+=Math.sin(clock.elapsedTime+i)*0.002;if(pos.array[i*3+1]>5)pos.array[i*3+1]=0;}pos.needsUpdate=true;});
   renderer.render(scene,camera);
 }
@@ -510,3 +1410,4 @@ function animate(){
 init();
 </script>
 </body>
+</html>

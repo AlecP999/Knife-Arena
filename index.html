@@ -122,7 +122,7 @@ canvas{display:block}
 .rarity-rare{color:rgba(60,120,255,0.8)}
 .rarity-epic{color:rgba(180,60,255,0.8)}
 .rarity-legendary{color:rgba(255,215,0,0.9);text-shadow:0 0 10px rgba(255,215,0,0.3)}
-.shop-item-preview{width:100%;height:80px;margin-bottom:16px;display:flex;align-items:center;justify-content:center}
+.shop-item-preview{width:100%;height:120px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);border-radius:4px}
 .shop-item-preview canvas{max-width:100%;max-height:100%}
 .shop-item-price{font-family:'Orbitron',sans-serif;font-size:14px;color:#ffd700;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px}
 .shop-item-btn{padding:10px 24px;background:transparent;border:1px solid rgba(255,215,0,0.3);color:#ffd700;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.3s;width:100%}
@@ -355,7 +355,7 @@ function renderShopItems(){
     div.innerHTML = `
       <div class="shop-item-name">${item.name}</div>
       <div class="shop-item-rarity rarity-${item.rarity}">${item.rarity.toUpperCase()}</div>
-      <div class="shop-item-preview"><canvas id="preview-${item.id}" width="180" height="70"></canvas></div>
+      <div class="shop-item-preview"><canvas id="preview-${item.id}" width="260" height="110"></canvas></div>
       ${item.price > 0 ? `<div class="shop-item-price">${item.price} KEYS</div>` : '<div class="shop-item-price" style="color:rgba(180,180,180,0.4)">DEFAULT</div>'}
       <button class="shop-item-btn ${btnClass}" data-id="${item.id}">${btnText}</button>
       <div class="shop-item-desc">${item.desc}</div>
@@ -399,74 +399,397 @@ function drawKnifePreview(id){
   const c = document.getElementById('preview-'+id);
   if(!c) return;
   const ctx = c.getContext('2d');
-  ctx.clearRect(0,0,180,70);
+  const W = 260, H = 110;
+  ctx.clearRect(0,0,W,H);
+
+  // Subtle background glow
+  const glow = ctx.createRadialGradient(W/2,H/2,10,W/2,H/2,100);
+  glow.addColorStop(0,'rgba(255,255,255,0.03)');
+  glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;
+  ctx.fillRect(0,0,W,H);
 
   if(id === 'standard'){
-    // Tactical knife
     ctx.save();
-    ctx.translate(90,35);
-    // Handle
-    ctx.fillStyle='#1a1a1a';ctx.strokeStyle='#333';ctx.lineWidth=1;
-    ctx.beginPath();ctx.roundRect(-8,-6,50,12,3);ctx.fill();ctx.stroke();
-    // Guard
-    ctx.fillStyle='#888';
-    ctx.fillRect(-12,-8,6,16);
-    // Blade
-    ctx.fillStyle='#ccc';ctx.strokeStyle='#999';
-    ctx.beginPath();ctx.moveTo(-14,0);ctx.lineTo(-60,-4);ctx.lineTo(-65,0);ctx.lineTo(-60,4);ctx.lineTo(-14,0);ctx.fill();ctx.stroke();
-    // Edge highlight
-    ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=0.5;
-    ctx.beginPath();ctx.moveTo(-14,-1);ctx.lineTo(-60,-4);ctx.stroke();
+    ctx.translate(130, 55);
+
+    // === BLADE — long drop-point tactical blade ===
+    // Spine (straight top edge) + clip point + belly curve + edge
+    const gradient = ctx.createLinearGradient(-85,0,-85,-8);
+    gradient.addColorStop(0,'#aaaaaa');
+    gradient.addColorStop(0.3,'#d8d8d8');
+    gradient.addColorStop(0.5,'#efefef');
+    gradient.addColorStop(0.7,'#d8d8d8');
+    gradient.addColorStop(1,'#b0b0b0');
+
+    ctx.fillStyle = gradient;
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    // Start at guard
+    ctx.moveTo(-10, -6);
+    // Spine — straight along top
+    ctx.lineTo(-80, -6);
+    // Clip point — angled down to tip
+    ctx.lineTo(-95, 0);
+    // Tip point
+    ctx.lineTo(-95, 1);
+    // Belly — slight curve back along bottom (sharp edge)
+    ctx.bezierCurveTo(-88, 4, -50, 5, -10, 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Fuller / blood groove
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.beginPath();
+    ctx.moveTo(-15, -3);
+    ctx.lineTo(-65, -3);
+    ctx.lineTo(-68, -1.5);
+    ctx.lineTo(-15, -1.5);
+    ctx.closePath();
+    ctx.fill();
+
+    // Edge highlight (sharp edge glint)
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(-10, 4);
+    ctx.bezierCurveTo(-50, 5, -88, 4, -95, 1);
+    ctx.stroke();
+
+    // Spine highlight
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(-10, -6);
+    ctx.lineTo(-80, -6);
+    ctx.stroke();
+
+    // === GUARD / CROSSGUARD ===
+    ctx.fillStyle = '#777';
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.roundRect(-12, -10, 6, 20, 1);
+    ctx.fill();
+    ctx.stroke();
+
+    // Guard bevel
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillRect(-11, -9, 1, 18);
+
+    // === HANDLE — ergonomic tactical grip ===
+    const hGrad = ctx.createLinearGradient(0,-7,0,7);
+    hGrad.addColorStop(0,'#1a1a1a');
+    hGrad.addColorStop(0.3,'#2a2a2a');
+    hGrad.addColorStop(0.7,'#222');
+    hGrad.addColorStop(1,'#111');
+
+    ctx.fillStyle = hGrad;
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    // Slightly curved ergonomic handle
+    ctx.moveTo(-6, -7);
+    ctx.lineTo(52, -6);
+    ctx.quadraticCurveTo(56, -5, 56, 0);
+    ctx.quadraticCurveTo(56, 5, 52, 6);
+    ctx.lineTo(-6, 7);
+    ctx.quadraticCurveTo(-8, 0, -6, -7);
+    ctx.fill();
+    ctx.stroke();
+
+    // Grip texture lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 0.8;
+    for(let i = 0; i < 8; i++){
+      const x = 0 + i * 6;
+      ctx.beginPath();
+      ctx.moveTo(x, -6);
+      ctx.lineTo(x, 6);
+      ctx.stroke();
+    }
+
+    // Jimping on spine (thumb serrations)
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    for(let i=0;i<4;i++){
+      ctx.fillRect(-14 - i*4, -7, 2, 2);
+    }
+
+    // Pommel / buttcap
+    ctx.fillStyle = '#555';
+    ctx.strokeStyle = '#444';
+    ctx.beginPath();
+    ctx.roundRect(54, -7, 6, 14, 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Lanyard hole
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(57, 0, 2, 0, Math.PI*2);
+    ctx.stroke();
+
     ctx.restore();
   }
   else if(id === 'balisong'){
-    // Butterfly knife
     ctx.save();
-    ctx.translate(90,35);
-    // Handle halves
-    ctx.fillStyle='#2a1a1a';ctx.strokeStyle='#ff3c3c';ctx.lineWidth=1;
-    ctx.beginPath();ctx.roundRect(5,-12,55,10,2);ctx.fill();ctx.stroke();
-    ctx.beginPath();ctx.roundRect(5,2,55,10,2);ctx.fill();ctx.stroke();
-    // Pivot pins
-    ctx.fillStyle='#ff3c3c';
-    ctx.beginPath();ctx.arc(8,-7,2,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(8,7,2,0,Math.PI*2);ctx.fill();
-    // Blade
-    ctx.fillStyle='#ddd';ctx.strokeStyle='#aaa';
-    ctx.beginPath();ctx.moveTo(5,0);ctx.lineTo(-55,-3);ctx.lineTo(-60,0);ctx.lineTo(-55,3);ctx.lineTo(5,0);ctx.fill();ctx.stroke();
-    // Red accent on blade
-    ctx.strokeStyle='rgba(255,60,60,0.3)';ctx.lineWidth=0.7;
-    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-50,-2);ctx.stroke();
+    ctx.translate(130, 55);
+
+    // === BLADE — curves slightly upward (opposite to handles) ===
+    const bGrad = ctx.createLinearGradient(0,-6,0,4);
+    bGrad.addColorStop(0,'#c0c0c0');
+    bGrad.addColorStop(0.35,'#e8e8e8');
+    bGrad.addColorStop(0.6,'#e0e0e0');
+    bGrad.addColorStop(1,'#aaa');
+
+    ctx.fillStyle = bGrad;
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(3, -3);
+    // Spine — curves upward gently
+    ctx.bezierCurveTo(-20, -7, -55, -9, -75, -6);
+    // Tip
+    ctx.lineTo(-83, -2);
+    // Edge — curves back, straighter
+    ctx.bezierCurveTo(-70, 2, -35, 4, 3, 3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Blade edge glint
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(3, 3);
+    ctx.bezierCurveTo(-35, 4, -70, 2, -83, -2);
+    ctx.stroke();
+
+    // Spine highlight
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(3, -3);
+    ctx.bezierCurveTo(-20, -7, -55, -9, -75, -6);
+    ctx.stroke();
+
+    // Tang pin
+    ctx.fillStyle = '#cc2222';
+    ctx.beginPath();
+    ctx.arc(0, -5, 1.5, 0, Math.PI*2);
+    ctx.fill();
+
+    // === PIVOT AREA ===
+    ctx.fillStyle = '#cc2222';
+    ctx.beginPath();
+    ctx.arc(5, -8, 2.5, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(5, 8, 2.5, 0, Math.PI*2);
+    ctx.fill();
+
+    // Pivot pin highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.beginPath();
+    ctx.arc(5, -8, 1, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(5, 8, 1, 0, Math.PI*2);
+    ctx.fill();
+
+    // === SAFE HANDLE (top) — curves downward (opposite blade) ===
+    const hGrad1 = ctx.createLinearGradient(0,-15,0,-4);
+    hGrad1.addColorStop(0,'#111');
+    hGrad1.addColorStop(0.5,'#222');
+    hGrad1.addColorStop(1,'#1a1a1a');
+
+    ctx.fillStyle = hGrad1;
+    ctx.strokeStyle = '#3a1111';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    // Top edge — bows outward (upward = negative Y for top handle)
+    ctx.moveTo(6, -13);
+    ctx.bezierCurveTo(22, -16, 48, -16, 68, -13);
+    // End cap
+    ctx.quadraticCurveTo(70, -10, 68, -5);
+    // Bottom edge — straighter (hugs blade gap)
+    ctx.bezierCurveTo(48, -4, 22, -4, 6, -5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Handle channel lines (follow curve)
+    ctx.strokeStyle = 'rgba(255,60,60,0.15)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(10, -12);ctx.bezierCurveTo(25,-14.5,50,-14.5,65,-12);ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(10, -6);ctx.bezierCurveTo(25,-5,50,-5,65,-6);ctx.stroke();
+
+    // === BITE HANDLE (bottom) — curves downward (outward) ===
+    const hGrad2 = ctx.createLinearGradient(0,4,0,15);
+    hGrad2.addColorStop(0,'#1a1a1a');
+    hGrad2.addColorStop(0.5,'#222');
+    hGrad2.addColorStop(1,'#111');
+
+    ctx.fillStyle = hGrad2;
+    ctx.strokeStyle = '#3a1111';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    // Top edge — straighter (hugs blade gap)
+    ctx.moveTo(6, 5);
+    ctx.bezierCurveTo(22, 4, 48, 4, 68, 5);
+    // End cap
+    ctx.quadraticCurveTo(70, 10, 68, 13);
+    // Bottom edge — bows outward (downward = positive Y)
+    ctx.bezierCurveTo(48, 16, 22, 16, 6, 13);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Handle channel lines
+    ctx.strokeStyle = 'rgba(255,60,60,0.15)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(10, 6);ctx.bezierCurveTo(25,5,50,5,65,6);ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(10, 12);ctx.bezierCurveTo(25,14.5,50,14.5,65,12);ctx.stroke();
+
+    // Latch
+    ctx.fillStyle = '#cc2222';
+    ctx.strokeStyle = '#881111';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.roundRect(61, -13, 9, 7, 1.5);
+    ctx.fill();
+    ctx.stroke();
+
+    // Handle screws
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    for(let i=0;i<3;i++){
+      ctx.beginPath();ctx.arc(20+i*16, -9 - Math.sin((i+1)/3*Math.PI)*2, 1, 0, Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(20+i*16, 9 + Math.sin((i+1)/3*Math.PI)*2, 1, 0, Math.PI*2);ctx.fill();
+    }
+
     ctx.restore();
   }
   else if(id === 'karambit'){
-    // Curved karambit claw
     ctx.save();
-    ctx.translate(90,35);
-    // Handle
-    ctx.fillStyle='#1a0a1e';ctx.strokeStyle='#aa44ff';ctx.lineWidth=1;
-    ctx.beginPath();ctx.roundRect(5,-6,50,12,3);ctx.fill();ctx.stroke();
-    // Ring
-    ctx.strokeStyle='#aa44ff';ctx.lineWidth=2.5;
-    ctx.beginPath();ctx.arc(58,0,7,0,Math.PI*2);ctx.stroke();
-    // Curved claw blade — smooth bezier
-    ctx.fillStyle='#ccc';ctx.strokeStyle='#999';ctx.lineWidth=1;
+    ctx.translate(130, 48);
+    ctx.rotate(0.08); // tilt slightly right
+
+    // === CURVED CLAW BLADE ===
+    // Based on reference: blade curves DOWN and BACK from guard like a raptor talon
+    const bGrad = ctx.createLinearGradient(-20,0,-20,25);
+    bGrad.addColorStop(0,'#d0d0d0');
+    bGrad.addColorStop(0.4,'#e5e5e5');
+    bGrad.addColorStop(0.6,'#ddd');
+    bGrad.addColorStop(1,'#b8b8b8');
+
+    ctx.fillStyle = bGrad;
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 0.8;
     ctx.beginPath();
-    ctx.moveTo(5,0);
-    ctx.bezierCurveTo(-10,-8,-30,-28,-42,-20);
-    ctx.lineTo(-44,-17);
-    ctx.bezierCurveTo(-28,-18,-8,-2,3,2);
-    ctx.lineTo(5,0);
-    ctx.fill();ctx.stroke();
-    // Sharp edge highlight
-    ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=0.7;
-    ctx.beginPath();
-    ctx.moveTo(3,2);
-    ctx.bezierCurveTo(-8,-2,-28,-18,-44,-17);
+    // Start at guard junction
+    ctx.moveTo(-6, 2);
+    // Spine (outer edge) — sweeps down and curves back
+    ctx.bezierCurveTo(-25, 2, -55, 18, -65, 32);
+    // Tip — sharp point
+    ctx.lineTo(-62, 34);
+    // Inner edge (sharp) — tighter curve back to guard
+    ctx.bezierCurveTo(-50, 25, -25, 10, -6, 6);
+    ctx.closePath();
+    ctx.fill();
     ctx.stroke();
-    // Purple accent
-    ctx.strokeStyle='rgba(170,68,255,0.5)';ctx.lineWidth=0.8;
-    ctx.beginPath();ctx.moveTo(0,-2);ctx.bezierCurveTo(-12,-10,-25,-22,-38,-18);ctx.stroke();
+
+    // Edge glint (inner sharp edge)
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(-6, 6);
+    ctx.bezierCurveTo(-25, 10, -50, 25, -62, 34);
+    ctx.stroke();
+
+    // Blade spine highlight
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(-6, 2);
+    ctx.bezierCurveTo(-25, 2, -55, 18, -65, 32);
+    ctx.stroke();
+
+    // Purple accent line
+    ctx.strokeStyle = 'rgba(136,51,221,0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-10, 3);
+    ctx.bezierCurveTo(-30, 5, -48, 16, -58, 28);
+    ctx.stroke();
+
+    // === GUARD ===
+    ctx.fillStyle = '#666';
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.roundRect(-8, -4, 6, 14, 1);
+    ctx.fill();
+    ctx.stroke();
+
+    // === HANDLE ===
+    const hGrad = ctx.createLinearGradient(0,-6,0,8);
+    hGrad.addColorStop(0,'#0e0818');
+    hGrad.addColorStop(0.5,'#1a1028');
+    hGrad.addColorStop(1,'#0e0818');
+
+    ctx.fillStyle = hGrad;
+    ctx.strokeStyle = '#2a1540';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(0, -5);
+    ctx.lineTo(50, -4);
+    ctx.quadraticCurveTo(54, -2, 54, 2);
+    ctx.quadraticCurveTo(54, 6, 50, 7);
+    ctx.lineTo(0, 8);
+    ctx.quadraticCurveTo(-2, 1.5, 0, -5);
+    ctx.fill();
+    ctx.stroke();
+
+    // Grip wraps
+    ctx.strokeStyle = 'rgba(136,51,221,0.15)';
+    ctx.lineWidth = 0.7;
+    for(let i = 0; i < 7; i++){
+      const x = 4 + i * 6.5;
+      ctx.beginPath();ctx.moveTo(x, -4);ctx.lineTo(x, 7);ctx.stroke();
+    }
+
+    // === FINGER RING ===
+    ctx.strokeStyle = '#8833dd';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(62, 2, 8, 0, Math.PI*2);
+    ctx.stroke();
+
+    // Ring inner shadow
+    ctx.strokeStyle = 'rgba(136,51,221,0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(62, 2, 6, 0, Math.PI*2);
+    ctx.stroke();
+
+    // Ring highlight
+    ctx.strokeStyle = 'rgba(200,150,255,0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(62, 2, 8, -0.8, 0.3);
+    ctx.stroke();
+
+    // Ring connector
+    ctx.fillStyle = '#1a1028';
+    ctx.fillRect(52, -2, 5, 8);
+
     ctx.restore();
   }
 }
@@ -614,276 +937,287 @@ function createAmbientParticles(){
 
 // ===== KNIFE VIEW MODELS =====
 function buildKnifeViewModel(){
-  // Remove old knife from camera
-  if(knifeGroup){
-    camera.remove(knifeGroup);
-    knifeGroup = null;
-    knifeBlade = null;
-  }
-
+  if(knifeGroup){ camera.remove(knifeGroup); knifeGroup=null; knifeBlade=null; }
   knifeGroup = new THREE.Group();
-
   if(equippedSkin === 'standard') buildStandardKnife();
   else if(equippedSkin === 'balisong') buildBalisongKnife();
   else if(equippedSkin === 'karambit') buildKarambitKnife();
-
   camera.add(knifeGroup);
   if(!scene.children.includes(camera)) scene.add(camera);
   updateWeaponName();
 }
 
+// ==================== STANDARD TACTICAL KNIFE ====================
 function buildStandardKnife(){
-  // Improved tactical knife with more detail
-  const handleMat = new THREE.MeshStandardMaterial({color:0x1a1a1a, roughness:0.4, metalness:0.6});
-  const guardMat = new THREE.MeshStandardMaterial({color:0x888888, roughness:0.2, metalness:0.9});
-  const bladeMat = new THREE.MeshStandardMaterial({color:0xdddddd, roughness:0.05, metalness:0.98});
-  const accentMat = new THREE.MeshStandardMaterial({color:0x444444, roughness:0.3, metalness:0.7});
+  const metalDark = new THREE.MeshStandardMaterial({color:0x222222, roughness:0.35, metalness:0.7});
+  const metalMid  = new THREE.MeshStandardMaterial({color:0x555555, roughness:0.25, metalness:0.85});
+  const metalBlade= new THREE.MeshStandardMaterial({color:0xc8c8c8, roughness:0.04, metalness:0.98});
+  const rubber    = new THREE.MeshStandardMaterial({color:0x111111, roughness:0.9, metalness:0.05});
+  const edgeMat   = new THREE.MeshStandardMaterial({color:0xeeeeee, roughness:0.02, metalness:1.0});
 
-  // Handle with grip texture (multiple segments)
-  const handle = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.045, 0.22), handleMat);
+  // --- HANDLE: rounded cylinder grip ---
+  const handleGeo = new THREE.CylinderGeometry(0.022, 0.025, 0.18, 12);
+  const handle = new THREE.Mesh(handleGeo, rubber);
+  handle.rotation.x = Math.PI/2;
+  handle.position.z = 0.06;
   knifeGroup.add(handle);
 
-  // Grip grooves
-  for(let i = 0; i < 5; i++){
-    const groove = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.002, 0.015), accentMat);
-    groove.position.set(0, 0.024, -0.08 + i * 0.04);
-    knifeGroup.add(groove);
+  // Grip rings (rubber texture feel)
+  for(let i=0;i<7;i++){
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.026, 0.002, 6, 12), metalDark);
+    ring.rotation.y = Math.PI/2;
+    ring.position.z = -0.02 + i*0.025;
+    knifeGroup.add(ring);
   }
 
-  // Pommel
-  const pommel = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.055, 0.025), guardMat);
-  pommel.position.z = 0.115;
+  // --- POMMEL: flat cap ---
+  const pommel = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.022, 0.015, 10), metalMid);
+  pommel.rotation.x = Math.PI/2;
+  pommel.position.z = 0.155;
   knifeGroup.add(pommel);
 
-  // Guard
-  const guard = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.025, 0.02), guardMat);
-  guard.position.z = -0.12;
+  // --- GUARD / CROSSGUARD ---
+  const guard = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.012, 0.012), metalMid);
+  guard.position.z = -0.035;
   knifeGroup.add(guard);
 
-  // Blade - improved shape
-  const bs = new THREE.Shape();
-  bs.moveTo(0.028, 0);
-  bs.lineTo(0.02, -0.30);
-  bs.lineTo(0, -0.35);
-  bs.lineTo(-0.015, -0.30);
-  bs.lineTo(-0.028, 0);
-  bs.closePath();
+  // --- BLADE: proper thick drop-point shape ---
+  // Use a cross-section extruded along Z axis for real thickness
+  const bladeLen = 0.28;
+  const bladeShape = new THREE.Shape();
+  // Diamond cross-section: wide at spine, tapered to edge
+  bladeShape.moveTo(0, 0.008);       // spine (top)
+  bladeShape.lineTo(0.014, 0);       // right face
+  bladeShape.lineTo(0, -0.003);      // edge (bottom, sharp)
+  bladeShape.lineTo(-0.014, 0);      // left face
+  bladeShape.closePath();
 
-  knifeBlade = new THREE.Mesh(
-    new THREE.ExtrudeGeometry(bs, {depth: 0.008, bevelEnabled: true, bevelThickness: 0.001, bevelSize: 0.001, bevelSegments: 1}),
-    bladeMat
-  );
-  knifeBlade.rotation.x = Math.PI / 2;
-  knifeBlade.position.set(0, 0, -0.13);
+  const extrudeSettings = {
+    steps: 1, depth: bladeLen, bevelEnabled: false
+  };
+  const bladeGeo = new THREE.ExtrudeGeometry(bladeShape, extrudeSettings);
+  knifeBlade = new THREE.Mesh(bladeGeo, metalBlade);
+  knifeBlade.position.set(0, 0, -0.035);
+  knifeBlade.rotation.y = Math.PI; // extrude goes +Z, we need -Z
   knifeGroup.add(knifeBlade);
 
-  // Blade spine detail
-  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.003, 0.005, 0.28), accentMat);
-  spine.position.set(0.02, 0, -0.27);
-  knifeGroup.add(spine);
+  // Blade tip taper — small pyramid at end
+  const tipGeo = new THREE.ConeGeometry(0.012, 0.04, 4);
+  const tip = new THREE.Mesh(tipGeo, metalBlade);
+  tip.rotation.x = Math.PI/2;
+  tip.rotation.y = Math.PI/4;
+  tip.position.set(0, 0.002, -0.035 - bladeLen + 0.005);
+  knifeGroup.add(tip);
 
-  knifeGroup.position.set(0.35, -0.3, -0.5);
-  knifeGroup.rotation.set(0.1, -0.3, 0);
+  // Edge highlight strip
+  const edgeGeo = new THREE.BoxGeometry(0.001, 0.001, bladeLen);
+  const edge = new THREE.Mesh(edgeGeo, edgeMat);
+  edge.position.set(0, -0.003, -0.035 - bladeLen/2);
+  knifeGroup.add(edge);
+
+  // Fuller (blood groove)
+  const fullerGeo = new THREE.BoxGeometry(0.006, 0.002, bladeLen * 0.6);
+  const fuller = new THREE.Mesh(fullerGeo, metalDark);
+  fuller.position.set(0, 0.005, -0.035 - bladeLen*0.35);
+  knifeGroup.add(fuller);
+
+  knifeGroup.position.set(0.32, -0.32, -0.45);
+  knifeGroup.rotation.set(0.0, -0.15, 0);
 }
 
+// ==================== BALISONG / BUTTERFLY KNIFE ====================
 function buildBalisongKnife(){
-  const handleMat = new THREE.MeshStandardMaterial({color:0x1a0a0a, roughness:0.3, metalness:0.7});
-  const pinMat = new THREE.MeshStandardMaterial({color:0xff3c3c, roughness:0.2, metalness:0.8, emissive:0x330000});
-  const bladeMat = new THREE.MeshStandardMaterial({color:0xdddddd, roughness:0.05, metalness:0.98});
-  const accentMat = new THREE.MeshStandardMaterial({color:0x882222, roughness:0.3, metalness:0.6});
+  const handleCol = new THREE.MeshStandardMaterial({color:0x1a1a1a, roughness:0.3, metalness:0.75});
+  const pinCol    = new THREE.MeshStandardMaterial({color:0xcc2222, roughness:0.2, metalness:0.8, emissive:0x220000});
+  const bladeCol  = new THREE.MeshStandardMaterial({color:0xd0d0d0, roughness:0.04, metalness:0.98});
+  const accentCol = new THREE.MeshStandardMaterial({color:0x661111, roughness:0.35, metalness:0.6});
 
-  // Safe handle (top)
+  // Pivot point (where handles hinge) — at Z = 0
+  const pivotZ = 0;
+  const handleLen = 0.17;
+  const bladeLen = 0.22;
+
+  // --- SAFE HANDLE (top) ---
   const safeHandle = new THREE.Group();
-  const sh = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.015, 0.2), handleMat);
+  // Main body
+  const sh = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.012, handleLen), handleCol);
+  sh.position.z = handleLen/2; // extends backward from pivot
   safeHandle.add(sh);
-  // Handle detail lines
-  for(let i=0;i<4;i++){
-    const line = new THREE.Mesh(new THREE.BoxGeometry(0.042,0.001,0.008),accentMat);
-    line.position.set(0,0.008,-0.06+i*0.04);
-    safeHandle.add(line);
-  }
-  safeHandle.position.set(0, 0.012, 0);
+  // Channel rails
+  const sr1 = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.002, handleLen), accentCol);
+  sr1.position.set(0, 0.007, handleLen/2);
+  safeHandle.add(sr1);
+  const sr2 = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.002, handleLen), accentCol);
+  sr2.position.set(0, -0.007, handleLen/2);
+  safeHandle.add(sr2);
+  // Latch
+  const latch = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.008, 0.03), pinCol);
+  latch.position.set(0, 0, handleLen - 0.01);
+  safeHandle.add(latch);
+
+  safeHandle.position.set(0, 0.008, pivotZ);
   knifeGroup.add(safeHandle);
   knifeGroup.userData.safeHandle = safeHandle;
 
-  // Bite handle (bottom)
+  // --- BITE HANDLE (bottom) ---
   const biteHandle = new THREE.Group();
-  const bh = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.015, 0.2), handleMat);
+  const bh = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.012, handleLen), handleCol);
+  bh.position.z = handleLen/2;
   biteHandle.add(bh);
-  for(let i=0;i<4;i++){
-    const line = new THREE.Mesh(new THREE.BoxGeometry(0.042,0.001,0.008),accentMat);
-    line.position.set(0,-0.008,-0.06+i*0.04);
-    biteHandle.add(line);
-  }
-  biteHandle.position.set(0, -0.012, 0);
+  const br1 = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.002, handleLen), accentCol);
+  br1.position.set(0, 0.007, handleLen/2);
+  biteHandle.add(br1);
+  const br2 = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.002, handleLen), accentCol);
+  br2.position.set(0, -0.007, handleLen/2);
+  biteHandle.add(br2);
+
+  biteHandle.position.set(0, -0.008, pivotZ);
   knifeGroup.add(biteHandle);
   knifeGroup.userData.biteHandle = biteHandle;
 
-  // Pivot pins (red accents)
-  const pin1 = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.05, 8), pinMat);
-  pin1.rotation.x = Math.PI/2;
-  pin1.position.set(0, 0, -0.09);
-  knifeGroup.add(pin1);
+  // --- PIVOT PINS ---
+  const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.035, 8), pinCol);
+  pin.rotation.x = Math.PI/2;
+  pin.position.set(0, 0, pivotZ);
+  knifeGroup.add(pin);
 
-  // Blade
-  const bs = new THREE.Shape();
-  bs.moveTo(0.018, 0);
-  bs.lineTo(0.012, -0.26);
-  bs.lineTo(0, -0.30);
-  bs.lineTo(-0.008, -0.26);
-  bs.lineTo(-0.018, 0);
-  bs.closePath();
-  knifeBlade = new THREE.Mesh(
-    new THREE.ExtrudeGeometry(bs, {depth: 0.006, bevelEnabled: true, bevelThickness: 0.001, bevelSize: 0.001}),
-    bladeMat
-  );
-  knifeBlade.rotation.x = Math.PI / 2;
-  knifeBlade.position.set(0, 0, -0.1);
+  // --- BLADE (extends forward from pivot, between the handles when closed) ---
+  const bladeShape = new THREE.Shape();
+  bladeShape.moveTo(0, 0.006);
+  bladeShape.lineTo(0.01, 0);
+  bladeShape.lineTo(0, -0.002);
+  bladeShape.lineTo(-0.01, 0);
+  bladeShape.closePath();
+
+  const bladeGeo = new THREE.ExtrudeGeometry(bladeShape, {
+    steps:1, depth: bladeLen, bevelEnabled: false
+  });
+  knifeBlade = new THREE.Mesh(bladeGeo, bladeCol);
+  knifeBlade.position.set(0, 0, pivotZ);
+  knifeBlade.rotation.y = Math.PI;
   knifeGroup.add(knifeBlade);
 
-  // Tang pin
-  const tang = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.04, 6), pinMat);
+  // Blade tip
+  const tipGeo = new THREE.ConeGeometry(0.008, 0.03, 4);
+  const tip = new THREE.Mesh(tipGeo, bladeCol);
+  tip.rotation.x = Math.PI/2;
+  tip.rotation.y = Math.PI/4;
+  tip.position.set(0, 0.002, pivotZ - bladeLen + 0.005);
+  knifeGroup.add(tip);
+
+  // Tang pin (stops handle from hitting blade)
+  const tang = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.03, 6), pinCol);
   tang.rotation.x = Math.PI/2;
-  tang.position.set(0.015, 0, -0.12);
+  tang.position.set(0.012, 0, pivotZ - 0.02);
   knifeGroup.add(tang);
 
-  knifeGroup.position.set(0.35, -0.3, -0.5);
-  knifeGroup.rotation.set(0.1, -0.3, 0);
+  knifeGroup.position.set(0.32, -0.32, -0.45);
+  knifeGroup.rotation.set(0.0, -0.15, 0);
 }
 
+// ==================== KARAMBIT ====================
 function buildKarambitKnife(){
-  const handleMat = new THREE.MeshStandardMaterial({color:0x1a0a1e, roughness:0.35, metalness:0.55});
-  const ringMat = new THREE.MeshStandardMaterial({color:0xaa44ff, roughness:0.15, metalness:0.85, emissive:0x1a0033});
-  const bladeMat = new THREE.MeshStandardMaterial({color:0xd0d0d0, roughness:0.05, metalness:0.97, side: THREE.DoubleSide});
-  const accentMat = new THREE.MeshStandardMaterial({color:0x551177, roughness:0.3, metalness:0.5});
-  const guardMat = new THREE.MeshStandardMaterial({color:0x666666, roughness:0.2, metalness:0.9});
+  const handleCol = new THREE.MeshStandardMaterial({color:0x151020, roughness:0.35, metalness:0.55});
+  const ringCol   = new THREE.MeshStandardMaterial({color:0x8833dd, roughness:0.15, metalness:0.85, emissive:0x110022});
+  const bladeCol  = new THREE.MeshStandardMaterial({color:0xc0c0c0, roughness:0.04, metalness:0.97, side:THREE.DoubleSide});
+  const edgeCol   = new THREE.MeshStandardMaterial({color:0xe8e8e8, roughness:0.02, metalness:1.0, side:THREE.DoubleSide});
+  const accentCol = new THREE.MeshStandardMaterial({color:0x3a1155, roughness:0.35, metalness:0.5});
+  const guardCol  = new THREE.MeshStandardMaterial({color:0x666666, roughness:0.2, metalness:0.9});
 
-  // === HANDLE ===
-  const handle = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.035, 0.16), handleMat);
+  // --- HANDLE ---
+  const handleGeo = new THREE.CylinderGeometry(0.02, 0.023, 0.15, 10);
+  const handle = new THREE.Mesh(handleGeo, handleCol);
+  handle.rotation.x = Math.PI/2;
+  handle.position.z = 0.04;
   knifeGroup.add(handle);
 
-  // Grip wraps
-  for(let i = 0; i < 6; i++){
-    const wrap = new THREE.Mesh(new THREE.BoxGeometry(0.053, 0.002, 0.006), accentMat);
-    wrap.position.set(0, 0.019, -0.055 + i * 0.022);
+  // Grip texture wraps
+  for(let i=0;i<6;i++){
+    const wrap = new THREE.Mesh(new THREE.TorusGeometry(0.024, 0.0015, 6, 10), accentCol);
+    wrap.rotation.y = Math.PI/2;
+    wrap.position.z = -0.01 + i * 0.022;
     knifeGroup.add(wrap);
   }
 
-  // === FINGER RING ===
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.004, 10, 20), ringMat);
-  ring.rotation.x = Math.PI / 2;
-  ring.position.set(0, 0, 0.105);
+  // --- FINGER RING at pommel ---
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.018, 0.004, 10, 20), ringCol);
+  ring.rotation.x = Math.PI/2;
+  ring.position.z = 0.13;
   knifeGroup.add(ring);
 
-  // Ring connector to handle
-  const rc = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.018, 0.025), handleMat);
-  rc.position.set(0, 0, 0.088);
+  // Ring connector
+  const rc = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.015, 0.02, 8), handleCol);
+  rc.rotation.x = Math.PI/2;
+  rc.position.z = 0.118;
   knifeGroup.add(rc);
 
-  // === GUARD ===
-  const guard = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.028, 0.015), guardMat);
-  guard.position.set(0, 0, -0.09);
+  // --- GUARD ---
+  const guard = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.01), guardCol);
+  guard.position.z = -0.04;
   knifeGroup.add(guard);
 
-  // === CURVED CLAW BLADE ===
-  // Build as a flat curved shape in XZ plane (the plane visible from first person)
-  // Use LatheGeometry-style approach: create blade as thin curved panel
+  // --- CURVED CLAW BLADE ---
+  // Build a proper 3D curved blade using ExtrudeGeometry with a claw-shaped path
+  // The blade shape is drawn on the YZ plane (curve visible from side)
+  const bladeShape = new THREE.Shape();
 
-  const bladeGroup = new THREE.Group();
+  // Karambit claw profile in YZ: starts at guard, curves DOWN then BACK
+  // We draw the outline as a 2D shape, then extrude for thickness (X width)
+  bladeShape.moveTo(0, 0);                          // guard junction (Y=down, Z=forward mapped here as Y,X)
+  // Spine (outer edge — top of blade)
+  bladeShape.bezierCurveTo(
+    -0.04, -0.04,  // cp1
+    -0.10, -0.10,  // cp2
+    -0.14, -0.08   // end — tip area
+  );
+  // Tip point
+  bladeShape.lineTo(-0.13, -0.06);
+  // Sharp inner edge (curves back tighter)
+  bladeShape.bezierCurveTo(
+    -0.09, -0.06,  // cp1
+    -0.04, -0.02,  // cp2
+    0, 0.005        // back to near guard
+  );
+  bladeShape.closePath();
 
-  // Define the claw curve points in local space
-  // X = left/right, Y = up/down (blade curves DOWN), Z = forward/back
-  const curvePoints = [
-    new THREE.Vector3(0, 0, 0),          // base at guard
-    new THREE.Vector3(0, -0.04, -0.06),  // starts curving down
-    new THREE.Vector3(0, -0.10, -0.10),  // deep curve
-    new THREE.Vector3(0, -0.14, -0.10),  // bottom of curve
-    new THREE.Vector3(0, -0.15, -0.06),  // curving back (tip area)
-    new THREE.Vector3(0, -0.13, -0.02),  // tip
-  ];
+  // Extrude the 2D claw for blade thickness
+  const bladeGeo = new THREE.ExtrudeGeometry(bladeShape, {
+    depth: 0.012,       // blade thickness (left-right)
+    bevelEnabled: true,
+    bevelThickness: 0.002,
+    bevelSize: 0.001,
+    bevelSegments: 2
+  });
 
-  const curve = new THREE.CatmullRomCurve3(curvePoints);
+  knifeBlade = new THREE.Mesh(bladeGeo, bladeCol);
+  // Rotate so:  Shape X→Z (forward), Shape Y→Y (down), Extrude Z→X (width)
+  knifeBlade.rotation.set(0, -Math.PI/2, 0);
+  knifeBlade.position.set(0.006, 0, -0.04);
+  knifeGroup.add(knifeBlade);
 
-  // Create blade as flat ribbon along the curve
-  // Sample the curve and build triangulated geometry
-  const samples = 24;
-  const bladeWidth = 0.012; // half-width of the blade
-  const positions = [];
-  const indices = [];
+  // Edge highlight
+  const edgeShape = new THREE.Shape();
+  edgeShape.moveTo(0, 0.005);
+  edgeShape.bezierCurveTo(-0.09,-0.06,-0.12,-0.07,-0.13,-0.06);
+  edgeShape.lineTo(-0.14,-0.08);
+  edgeShape.bezierCurveTo(-0.10,-0.10,-0.04,-0.04,0,0);
+  edgeShape.closePath();
+  const edgeGeo = new THREE.ExtrudeGeometry(edgeShape, {
+    depth:0.003, bevelEnabled:false
+  });
+  const edgeMesh = new THREE.Mesh(edgeGeo, edgeCol);
+  edgeMesh.rotation.set(0, -Math.PI/2, 0);
+  edgeMesh.position.set(0.0045, -0.001, -0.04);
+  knifeGroup.add(edgeMesh);
 
-  for(let i = 0; i <= samples; i++){
-    const t = i / samples;
-    const p = curve.getPoint(t);
-    const tangent = curve.getTangent(t).normalize();
+  // Purple accent glow line along spine
+  const glowLine = new THREE.Mesh(new THREE.BoxGeometry(0.002, 0.002, 0.08), ringCol);
+  glowLine.position.set(0, 0.006, -0.08);
+  glowLine.rotation.x = 0.15;
+  knifeGroup.add(glowLine);
 
-    // Blade thins toward tip
-    const taper = 1.0 - t * 0.4;
-    const w = bladeWidth * taper;
-
-    // Left and right edge of the blade (along X axis)
-    positions.push(p.x - w, p.y, p.z); // left vertex
-    positions.push(p.x + w, p.y, p.z); // right vertex
-  }
-
-  // Create faces
-  for(let i = 0; i < samples; i++){
-    const a = i * 2;
-    const b = i * 2 + 1;
-    const c = (i + 1) * 2;
-    const d = (i + 1) * 2 + 1;
-    indices.push(a, c, b);
-    indices.push(b, c, d);
-  }
-
-  const bladeGeo = new THREE.BufferGeometry();
-  bladeGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  bladeGeo.setIndex(indices);
-  bladeGeo.computeVertexNormals();
-
-  const bladeMesh = new THREE.Mesh(bladeGeo, bladeMat);
-  bladeGroup.add(bladeMesh);
-
-  // Add spine (back/thick edge of blade) for visibility
-  const spinePoints = [];
-  for(let i = 0; i <= samples; i++){
-    spinePoints.push(curve.getPoint(i / samples));
-  }
-  const spineCurve = new THREE.CatmullRomCurve3(spinePoints);
-  const spineGeo = new THREE.TubeGeometry(spineCurve, samples, 0.004, 6, false);
-  const spineMesh = new THREE.Mesh(spineGeo, new THREE.MeshStandardMaterial({
-    color: 0xbbbbbb, roughness: 0.1, metalness: 0.9
-  }));
-  bladeGroup.add(spineMesh);
-
-  // Sharp edge (inner curve) — slightly offset thinner tube for visual definition
-  const edgePoints = [];
-  for(let i = 0; i <= samples; i++){
-    const t = i / samples;
-    const p = curve.getPoint(t);
-    const taper = 1.0 - t * 0.4;
-    edgePoints.push(new THREE.Vector3(p.x + bladeWidth * taper, p.y, p.z));
-  }
-  const edgeCurve = new THREE.CatmullRomCurve3(edgePoints);
-  const edgeGeo = new THREE.TubeGeometry(edgeCurve, samples, 0.002, 4, false);
-  const edgeMesh = new THREE.Mesh(edgeGeo, new THREE.MeshStandardMaterial({
-    color: 0xeeeeee, roughness: 0.02, metalness: 0.99
-  }));
-  bladeGroup.add(edgeMesh);
-
-  bladeGroup.position.set(0, 0, -0.09);
-  knifeGroup.add(bladeGroup);
-  knifeBlade = bladeGroup;
-
-  // Purple glow accent on the blade spine
-  const glowGeo = new THREE.TubeGeometry(spineCurve, samples, 0.002, 4, false);
-  const glowMesh = new THREE.Mesh(glowGeo, new THREE.MeshStandardMaterial({
-    color: 0xaa44ff, emissive: 0x440088, roughness: 0.3, metalness: 0.5, transparent: true, opacity: 0.6
-  }));
-  glowMesh.position.set(0, 0.006, 0);
-  bladeGroup.add(glowMesh);
-
-  knifeGroup.position.set(0.35, -0.28, -0.48);
-  knifeGroup.rotation.set(0.15, -0.25, 0.05);
+  knifeGroup.position.set(0.32, -0.30, -0.45);
+  knifeGroup.rotation.set(0.05, -0.15, 0.1);
 }
 
 // ===== INSPECT SYSTEM =====
@@ -891,133 +1225,108 @@ function startInspect(){
   if(isInspecting || knifeSwinging || !gameActive || isSliding) return;
   isInspecting = true;
   inspectTimer = 0;
-
-  if(equippedSkin === 'standard') inspectDuration = 2.0;
-  else if(equippedSkin === 'balisong') inspectDuration = 2.8;
-  else if(equippedSkin === 'karambit') inspectDuration = 2.2;
+  if(equippedSkin === 'standard') inspectDuration = 2.2;
+  else if(equippedSkin === 'balisong') inspectDuration = 2.5;
+  else if(equippedSkin === 'karambit') inspectDuration = 2.0;
 }
+
+// Smooth easing
+function easeInOut(t){ return t*t*(3-2*t); }
+function easeOut(t){ return 1-(1-t)*(1-t); }
 
 function updateInspectAnimation(dt){
   if(!isInspecting) return;
   inspectTimer += dt;
-
-  if(inspectTimer >= inspectDuration){
-    isInspecting = false;
-    inspectTimer = 0;
-    return;
-  }
-
+  if(inspectTimer >= inspectDuration){ isInspecting=false; inspectTimer=0; return; }
   const t = inspectTimer / inspectDuration;
+  const bp = getBasePosition();
+  const br = getBaseRotation();
+
+  // Smooth in/out envelope
+  const env = t < 0.15 ? easeInOut(t/0.15) : (t > 0.8 ? easeInOut((1-t)/0.2) : 1.0);
 
   if(equippedSkin === 'standard'){
-    // Standard: bring knife center, tilt to show blade, slow turn
-    const phase = t < 0.3 ? t/0.3 : (t > 0.7 ? (1-t)/0.3 : 1);
-    const eased = phase < 1 ? phase * phase * (3 - 2*phase) : 1;
+    // Bring knife to center-left, slowly tilt blade side to side to show both faces
+    const cx = bp.x - 0.2 * env;
+    const cy = bp.y + 0.18 * env;
+    const cz = bp.z + 0.12 * env;
+    knifeGroup.position.set(cx, cy, cz);
 
-    knifeGroup.position.set(
-      0.35 - 0.25 * eased,
-      -0.3 + 0.15 * eased,
-      -0.5 + 0.1 * eased
-    );
-    // Tilt to show blade flatside
-    const turnT = Math.max(0, Math.min(1, (t - 0.15) / 0.7));
+    const lookT = Math.max(0, Math.min(1, (t-0.1)/0.8));
+    // Slow rotation: roll wrist to show blade flat, then edge, then flat other side
     knifeGroup.rotation.set(
-      0.1 + 0.3 * eased * Math.sin(turnT * Math.PI),
-      -0.3 + 0.8 * eased * Math.sin(turnT * Math.PI),
-      0 + 0.4 * eased * Math.sin(turnT * Math.PI * 0.8)
+      br.x + 0.2 * env * Math.sin(lookT * Math.PI * 0.8),
+      br.y + 0.6 * env * Math.sin(lookT * Math.PI),
+      0.5 * env * Math.sin(lookT * Math.PI * 1.2)
     );
   }
   else if(equippedSkin === 'balisong'){
-    // Balisong: full butterfly flip sequence
-    const phase = t < 0.15 ? t/0.15 : (t > 0.85 ? (1-t)/0.15 : 1);
-    const eased = Math.min(1, phase * phase * (3 - 2*phase));
+    // ===== BALISONG BUTTERFLY FLIP =====
+    const cx = bp.x - 0.15 * env;
+    const cy = bp.y + 0.14 * env;
+    const cz = bp.z + 0.1 * env;
+    knifeGroup.position.set(cx, cy, cz);
 
-    // Bring to center
-    knifeGroup.position.set(
-      0.35 - 0.2 * eased,
-      -0.3 + 0.12 * eased,
-      -0.5 + 0.08 * eased
-    );
-
-    // Handles flip animation
     const safeHandle = knifeGroup.userData.safeHandle;
     const biteHandle = knifeGroup.userData.biteHandle;
+    if(!safeHandle || !biteHandle) return;
 
-    if(safeHandle && biteHandle){
-      const flipT = Math.max(0, Math.min(1, (t - 0.1) / 0.8));
+    const flipT = Math.max(0, Math.min(1, (t-0.08)/0.84));
 
-      // Multi-phase flip: open -> aerial -> catch -> close
-      if(flipT < 0.25){
-        // Phase 1: Open handles outward
-        const p = flipT / 0.25;
-        const ease = p * p * (3 - 2*p);
-        safeHandle.rotation.x = ease * Math.PI * 0.8;
-        biteHandle.rotation.x = -ease * Math.PI * 0.6;
-        safeHandle.position.z = -ease * 0.04;
-        biteHandle.position.z = -ease * 0.03;
-      } else if(flipT < 0.5){
-        // Phase 2: Full rotation (the flip)
-        const p = (flipT - 0.25) / 0.25;
-        const ease = p * p * (3 - 2*p);
-        safeHandle.rotation.x = Math.PI * 0.8 + ease * Math.PI * 1.2;
-        biteHandle.rotation.x = -Math.PI * 0.6 - ease * Math.PI * 1.4;
-        // Whole knife rolls
-        knifeGroup.rotation.z = ease * Math.PI * 0.3;
-      } else if(flipT < 0.75){
-        // Phase 3: Catch — handles swing back
-        const p = (flipT - 0.5) / 0.25;
-        const ease = p * p * (3 - 2*p);
-        safeHandle.rotation.x = Math.PI * 2.0 - ease * Math.PI * 1.5;
-        biteHandle.rotation.x = -Math.PI * 2.0 + ease * Math.PI * 1.5;
-        safeHandle.position.z = -0.04 + ease * 0.04;
-        biteHandle.position.z = -0.03 + ease * 0.03;
-        knifeGroup.rotation.z = Math.PI * 0.3 - ease * Math.PI * 0.3;
-      } else {
-        // Phase 4: Close — snap shut
-        const p = (flipT - 0.75) / 0.25;
-        const ease = p * p * (3 - 2*p);
-        safeHandle.rotation.x = Math.PI * 0.5 * (1 - ease);
-        biteHandle.rotation.x = -Math.PI * 0.5 * (1 - ease);
-        safeHandle.position.z = 0;
-        biteHandle.position.z = 0;
-      }
+    if(flipT < 0.2){
+      // Phase 1: Thumb push — safe handle swings open 180deg
+      const p = easeOut(flipT / 0.2);
+      safeHandle.rotation.x = -p * Math.PI;
+      biteHandle.rotation.x = 0;
+    } else if(flipT < 0.45){
+      // Phase 2: Wrist roll — bite handle swings open, whole knife tilts
+      const p = easeInOut((flipT-0.2)/0.25);
+      safeHandle.rotation.x = -Math.PI;
+      biteHandle.rotation.x = p * Math.PI;
+      knifeGroup.rotation.z = p * 0.25 * env;
+    } else if(flipT < 0.65){
+      // Phase 3: Aerial catch — both handles swing back
+      const p = easeInOut((flipT-0.45)/0.2);
+      safeHandle.rotation.x = -Math.PI + p * Math.PI * 0.7;
+      biteHandle.rotation.x = Math.PI - p * Math.PI * 0.7;
+      knifeGroup.rotation.z = 0.25 * env * (1-p);
+    } else if(flipT < 0.85){
+      // Phase 4: Snap closed
+      const p = easeInOut((flipT-0.65)/0.2);
+      safeHandle.rotation.x = -Math.PI * 0.3 * (1-p);
+      biteHandle.rotation.x = Math.PI * 0.3 * (1-p);
+    } else {
+      // Phase 5: Settle
+      const p = easeInOut((flipT-0.85)/0.15);
+      safeHandle.rotation.x = 0;
+      biteHandle.rotation.x = 0;
     }
 
-    // Subtle wrist roll during flip
-    const rollT = Math.max(0, Math.min(1, (t - 0.2) / 0.6));
+    // Subtle wrist motion
+    const wristT = Math.max(0, Math.min(1, (t-0.05)/0.9));
     knifeGroup.rotation.set(
-      0.1 + 0.2 * eased,
-      -0.3 + Math.sin(rollT * Math.PI * 2) * 0.4 * eased,
+      br.x + 0.15 * env * Math.sin(wristT * Math.PI),
+      br.y + 0.2 * env * Math.sin(wristT * Math.PI * 1.5),
       knifeGroup.rotation.z || 0
     );
   }
   else if(equippedSkin === 'karambit'){
-    // Karambit: finger spin — the iconic twirl around the ring finger
-    const phase = t < 0.15 ? t/0.15 : (t > 0.85 ? (1-t)/0.15 : 1);
-    const eased = Math.min(1, phase * phase * (3 - 2*phase));
+    // ===== KARAMBIT FINGER SPIN =====
+    const cx = bp.x - 0.12 * env;
+    const cy = bp.y + 0.12 * env;
+    const cz = bp.z + 0.1 * env;
+    knifeGroup.position.set(cx, cy, cz);
 
-    // Bring to center
-    knifeGroup.position.set(
-      0.35 - 0.15 * eased,
-      -0.3 + 0.1 * eased,
-      -0.5 + 0.12 * eased
-    );
+    const spinT = Math.max(0, Math.min(1, (t-0.08)/0.84));
 
-    const spinT = Math.max(0, Math.min(1, (t - 0.1) / 0.8));
-
-    // Full 360 spin around finger ring axis
-    // The karambit spins around the Z axis (pommel ring)
-    const spinAngle = spinT * Math.PI * 2;
-    // Add a second partial spin for style
-    const extraSpin = spinT > 0.7 ? (spinT - 0.7) / 0.3 * Math.PI * 0.5 : 0;
+    // Full 360° spin around the Z axis (finger ring spins in-hand)
+    const spinAngle = easeInOut(spinT) * Math.PI * 2;
 
     knifeGroup.rotation.set(
-      0.1 + Math.sin(spinT * Math.PI) * 0.3 * eased,
-      -0.3 + 0.5 * eased,
-      (spinAngle + extraSpin) * eased
+      br.x + 0.15 * env * Math.sin(spinT * Math.PI),
+      br.y + 0.3 * env,
+      br.z + spinAngle * env
     );
-
-    // Blade follows naturally with the group rotation
   }
 }
 
@@ -1312,81 +1621,73 @@ function updatePlayer(dt){
 }
 
 function animateKnife(){
-  if(!knifeGroup)return;
-
-  // Inspect animation takes priority
-  if(isInspecting){
-    updateInspectAnimation(clock.getDelta ? 0.016 : 0.016);
-    return;
-  }
-
-  // Reset balisong handles when not inspecting
-  if(equippedSkin === 'balisong' && knifeGroup.userData.safeHandle){
-    if(!knifeSwinging){
-      knifeGroup.userData.safeHandle.rotation.x *= 0.9;
-      knifeGroup.userData.biteHandle.rotation.x *= 0.9;
-      knifeGroup.userData.safeHandle.position.z *= 0.9;
-      knifeGroup.userData.biteHandle.position.z *= 0.9;
-    }
-  }
+  if(!knifeGroup) return;
 
   const bp = getBasePosition();
   const br = getBaseRotation();
 
+  // Inspect takes full priority — handled by updateInspectAnimation in animate()
+  if(isInspecting) return;
+
+  // Reset balisong handles smoothly when not inspecting/swinging
+  if(equippedSkin === 'balisong' && knifeGroup.userData.safeHandle && !knifeSwinging){
+    knifeGroup.userData.safeHandle.rotation.x *= 0.85;
+    knifeGroup.userData.biteHandle.rotation.x *= 0.85;
+  }
+
   if(isSliding){
-    knifeGroup.position.set(bp.x - 0.05, bp.y - 0.15, bp.z + 0.1);
-    knifeGroup.rotation.set(0.5, br.y + 0.2, -0.2);
+    knifeGroup.position.set(bp.x - 0.05, bp.y - 0.12, bp.z + 0.08);
+    knifeGroup.rotation.set(0.4, br.y + 0.15, -0.15);
     return;
   }
 
   if(knifeSwinging){
     if(backstabSwinging){
-      const t=Math.min(1,(BACKSTAB_COOLDOWN-backstabCD)/0.4);
+      const t = Math.min(1, (BACKSTAB_COOLDOWN - backstabCD) / 0.4);
+      const s = Math.sin(t * Math.PI);
       if(equippedSkin === 'karambit'){
-        // Karambit backstab: hooking motion
-        knifeGroup.position.set(bp.x-0.15,bp.y+0.08*Math.sin(t*Math.PI),bp.z-0.3*Math.sin(t*Math.PI));
-        knifeGroup.rotation.set(br.x+0.5*Math.sin(t*Math.PI),br.y-0.3,br.z+0.2*Math.sin(t*Math.PI));
+        knifeGroup.position.set(bp.x - 0.12, bp.y + 0.06*s, bp.z - 0.25*s);
+        knifeGroup.rotation.set(br.x + 0.6*s, br.y - 0.2, br.z + 0.15*s);
       } else if(equippedSkin === 'balisong'){
-        // Balisong backstab: quick stab
-        knifeGroup.position.set(bp.x-0.1,bp.y+0.05*Math.sin(t*Math.PI),bp.z-0.3*Math.sin(t*Math.PI));
-        knifeGroup.rotation.set(br.x+0.4*Math.sin(t*Math.PI),br.y,br.z);
+        knifeGroup.position.set(bp.x - 0.08, bp.y + 0.04*s, bp.z - 0.28*s);
+        knifeGroup.rotation.set(br.x + 0.5*s, br.y, br.z);
       } else {
-        knifeGroup.position.set(bp.x-0.1,bp.y+0.05*Math.sin(t*Math.PI),bp.z-0.25*Math.sin(t*Math.PI));
-        knifeGroup.rotation.set(br.x+0.3*Math.sin(t*Math.PI),br.y,br.z);
+        knifeGroup.position.set(bp.x - 0.08, bp.y + 0.04*s, bp.z - 0.22*s);
+        knifeGroup.rotation.set(br.x + 0.35*s, br.y, br.z);
       }
     } else {
-      const t=1-knifeCD/0.5;
+      const t = 1 - knifeCD / 0.5;
+      const s = Math.sin(t * Math.PI);
       if(equippedSkin === 'karambit'){
-        // Karambit slash: wide sweeping hook
-        knifeGroup.position.set(bp.x-0.3*t,bp.y+0.12*Math.sin(t*Math.PI),bp.z+0.1*t);
-        knifeGroup.rotation.set(br.x-0.3*t,br.y+1.5*t,br.z-0.5*t);
+        // Wide sweeping hook
+        knifeGroup.position.set(bp.x - 0.25*t, bp.y + 0.1*s, bp.z + 0.08*t);
+        knifeGroup.rotation.set(br.x - 0.25*t, br.y + 1.4*t, br.z - 0.4*t);
       } else if(equippedSkin === 'balisong'){
-        // Balisong slash: quick flick
-        knifeGroup.position.set(bp.x-0.15*t,bp.y+0.08*Math.sin(t*Math.PI),bp.z+0.2*t);
-        knifeGroup.rotation.set(br.x-0.6*t,br.y+1.0*t,br.z-0.2*t);
+        knifeGroup.position.set(bp.x - 0.12*t, bp.y + 0.06*s, bp.z + 0.15*t);
+        knifeGroup.rotation.set(br.x - 0.5*t, br.y + 0.9*t, br.z - 0.15*t);
       } else {
-        knifeGroup.position.set(bp.x-0.2*t,bp.y+0.1*Math.sin(t*Math.PI),bp.z+0.15*t);
-        knifeGroup.rotation.set(br.x-0.5*t,br.y+1.2*t,br.z-0.3*t);
+        knifeGroup.position.set(bp.x - 0.15*t, bp.y + 0.08*s, bp.z + 0.12*t);
+        knifeGroup.rotation.set(br.x - 0.4*t, br.y + 1.1*t, br.z - 0.25*t);
       }
     }
   } else {
-    // Idle sway
-    const sw=Math.sin(clock.elapsedTime*2)*0.008;
-    const bo=Math.sin(clock.elapsedTime*1.5)*0.005;
-    knifeGroup.position.set(bp.x+sw,bp.y+bo,bp.z);
-    knifeGroup.rotation.set(br.x,br.y,br.z);
+    // Idle breathing sway
+    const sw = Math.sin(clock.elapsedTime * 1.8) * 0.006;
+    const bo = Math.sin(clock.elapsedTime * 1.3) * 0.004;
+    knifeGroup.position.set(bp.x + sw, bp.y + bo, bp.z);
+    knifeGroup.rotation.set(br.x, br.y, br.z);
   }
 }
 
 function getBasePosition(){
-  if(equippedSkin === 'karambit') return new THREE.Vector3(0.35, -0.28, -0.48);
-  if(equippedSkin === 'balisong') return new THREE.Vector3(0.33, -0.3, -0.5);
-  return new THREE.Vector3(0.35, -0.3, -0.5);
+  if(equippedSkin === 'karambit') return new THREE.Vector3(0.32, -0.30, -0.45);
+  if(equippedSkin === 'balisong') return new THREE.Vector3(0.32, -0.32, -0.45);
+  return new THREE.Vector3(0.32, -0.32, -0.45);
 }
 function getBaseRotation(){
-  if(equippedSkin === 'karambit') return new THREE.Euler(0.15, -0.25, 0.05);
-  if(equippedSkin === 'balisong') return new THREE.Euler(0.1, -0.3, 0);
-  return new THREE.Euler(0.1, -0.3, 0);
+  if(equippedSkin === 'karambit') return new THREE.Euler(0.05, -0.15, 0.1);
+  if(equippedSkin === 'balisong') return new THREE.Euler(0.0, -0.15, 0);
+  return new THREE.Euler(0.0, -0.15, 0);
 }
 
 // Track dt for inspect separately since clock.getDelta() is called in animate
@@ -1398,7 +1699,7 @@ function animate(){
   lastInspectTime = dt;
   updatePlayer(dt);
 
-  // Update inspect with actual dt
+  // Update inspect with actual dt (only here, not in animateKnife)
   if(isInspecting) updateInspectAnimation(dt);
   animateKnife();
 
